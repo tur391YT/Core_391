@@ -1,6 +1,90 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
-/* Кнопки шаблонов */
+/* --- БАЗОВЫЕ НАСТРОЙКИ --- */
+:root {
+    --accent: #ff4d00;
+    --bg-dark: #050505;
+    --bg-card: #0f0f0f;
+    --bg-input: #151515;
+    --border: #222;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+    margin: 0;
+}
+
+/* --- КОНТЕЙНЕР АДМИНКИ --- */
+.admin-container {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid #1a1a1a;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.admin-container h1 {
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+/* --- ФОРМЫ И ПОЛЯ --- */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    flex: 1;
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #888;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input[type="text"], 
+select {
+    width: 100%;
+    padding: 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #1a1a1a;
+}
+
+/* --- КНОПКИ И ШАБЛОНЫ --- */
+.template-panel {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
 .template-btn {
     background: #1a1a1a;
     border: 1px solid #333;
@@ -19,111 +103,16 @@
     color: #fff;
     background: #222;
 }
-.template-btn.btn-danger:hover {
-    background: #ff0000 !important;
-    color: #fff !important;
-    border-color: #ff0000 !important;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+
+.template-btn.special {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
-/* --- ПОЛНОЕ ЗАТЕМНЕНИЕ CKEDITOR --- */
-:root {
-    --ck-color-base-background: #151515 !important;
-    --ck-color-toolbar-background: #1a1a1a !important;
-    --ck-color-toolbar-border: #222 !important;
-    --ck-color-base-border: #222 !important;
-    --ck-color-text: #ffffff !important;
-    --ck-color-button-default-hover-background: #333 !important;
-    --ck-color-button-on-background: #ff4d00 !important;
-}
-
-/* Внутренняя область редактора */
-.ck-editor__main .ck-content {
-    background-color: #151515 !important;
-    color: white !important;
-    min-height: 400px;
-}
-
-/* Выпадающие списки в редакторе (Заголовки и т.д.) */
-.ck.ck-list {
-    background: #1a1a1a !important;
-}
-.ck.ck-list__item button:hover {
-    background: #333 !important;
-}
-
-body {
-    background-color: #050505;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    display: flex;
-    justify-content: center; /* Центрируем форму по горизонтали */
-    padding: 60px 20px;
-}
-
-.admin-container {
-    width: 100%;
-    max-width: 1000px; /* Ограничиваем ширину, чтобы не было растянуто */
-    background: #0f0f0f;
-    padding: 40px;
-    border-radius: 15px;
-    border: 1px solid #1a1a1a;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-.admin-container h1 {
-    font-weight: 900;
-    text-transform: uppercase;
-    color: #ff4d00;
-    margin-bottom: 35px;
-    text-align: center; /* Заголовок по центру */
-}
-
-/* Группировка полей в одну строку (например, Категория и Подкатегория) */
-.form-row {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
-.form-group {
-    flex: 1; /* Поля будут делиться поровну */
-    margin-bottom: 25px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-    color: #888;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-input[type="text"], 
-select, 
-textarea {
-    width: 100%;
-    padding: 16px;
-    background: #151515;
-    border: 1px solid #222;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: #ff4d00;
-    background: #1a1a1a;
-}
-
-/* Кнопка сохранить */
 .btn-save {
     width: 100%;
     padding: 20px;
-    background: #ff4d00;
+    background: var(--accent);
     border: none;
     border-radius: 8px;
     color: #fff;
@@ -138,48 +127,75 @@ input:focus, select:focus, textarea:focus {
 .btn-save:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(255, 77, 0, 0.4);
-    filter: brightness(1.1);
 }
 
-/* Фикс для редактора (если он слишком широкий) */
-.ck-editor__main .ck-content {
-    min-height: 350px;
-}
-/* --- ТЕМНАЯ ТЕМА ДЛЯ РЕДАКТОРА --- */
-
-/* Фон основной области письма */
-.ck-editor__main .ck-content {
-    background-color: #151515 !important;
-    color: #ffffff !important;
-    border-color: #222 !important;
-}
-
-/* Панель инструментов (верхняя плашка) */
-.ck.ck-toolbar {
-    background-color: #1a1a1a !important;
-    border-color: #222 !important;
-}
-
-/* Кнопки в панели инструментов */
-.ck.ck-button {
-    color: #ccc !important;
-    cursor: pointer;
-}
-
-.ck.ck-button:hover {
-    background-color: #333 !important;
-}
-
-.ck.ck-button.ck-on {
-    background-color: var(--accent) !important;
+.btn-danger {
+    background-color: #ff0000 !important;
     color: #fff !important;
+    border: none;
+    padding: 0 25px;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-/* Скроллбар внутри редактора */
-.ck-content::-webkit-scrollbar {
-    width: 8px;
+/* --- CORE 391 VISUAL EDITOR --- */
+/* Делаем границы таблиц видимыми в редакторе */
+#visual-editor .guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    border: 1px solid #333 !important; /* Важно! */
 }
-.ck-content::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 10px;
+
+#visual-editor .guide-table th, 
+#visual-editor .guide-table td {
+    border: 1px solid #333 !important;
+    padding: 12px;
+    text-align: left;
+}
+
+#visual-editor .guide-table th {
+    background: #1a1a1a;
+    color: #ff4d00;
+}
+
+/* Чтобы картинки внутри таблицы не ломали верстку */
+#visual-editor img {
+    max-width: 42px;
+    vertical-align: middle;
+}
+
+/* Таблицы гайдов */
+.guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #111;
+    border: 1px solid #333;
+}
+
+.guide-table th {
+    background: #1a1a1a;
+    color: #ff4d00;
+    text-align: left;
+    padding: 12px;
+    font-size: 14px;
+    text-transform: uppercase;
+    border: 1px solid #333;
+}
+
+.guide-table td {
+    padding: 15px;
+    border: 1px solid #333;
+    vertical-align: middle;
+    color: #eee;
+}
+
+/* Фикс для заголовков в редакторе */
+#visual-editor h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 20px;
 }

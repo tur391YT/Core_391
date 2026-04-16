@@ -39,6 +39,7 @@ header {
 }
 
 .logo img { height: 42px; display: block; }
+
 .nav-menu { display: flex; gap: 30px; align-items: center; }
 .nav-menu a {
     color: var(--text-main);
@@ -78,230 +79,96 @@ header {
 }
 .accent-text { color: var(--accent); }
 
-/* --- КОНТЕНТ --- */
-.main-content {
-    max-width: 1400px;
-    margin: 0 auto 80px;
-    padding: 0 40px;
-    position: relative;
-    z-index: 5;
+/* --- ГИБКИЕ ТАБЛИЦЫ ГАЙДОВ --- */
+.ck-content {
+    color: #fff;
+    font-family: 'Inter', sans-serif;
 }
 
-h2.section-title {
-    font-size: 24px;
-    font-weight: 900;
-    margin-bottom: 25px;
+/* --- ГИБКИЕ ТАБЛИЦЫ ГАЙДОВ --- */
+.guide-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: #0a0a0a;
+    border-radius: 12px;
+    border: 1px solid #1a1a1a;
+    margin: 20px 0;
+}
+
+.guide-table {
+    width: 100% !important;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: auto;
+}
+
+.guide-table td {
+    padding: 15px;
+    border-bottom: 1px solid #111;
+    vertical-align: middle;
+    color: #ccc;
+}
+
+/* Настройки картинок в таблицах */
+.guide-table td img {
+    /* Убираем жесткую фиксацию, чтобы работал ресайз из JS */
+    max-width: 100%; 
+    height: auto !important; 
+    display: inline-block;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 8px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Если картинка без ручного размера, даем ей базовый вид */
+.guide-table td img:not([style*="width"]) {
+    width: 45px;
+}
+
+.item-slot, .weapon-img-info, .char-item, .stat-label {
     display: flex;
     align-items: center;
-    gap: 15px;
-}
-h2.section-title::after { content: ''; height: 1px; background: #222; flex-grow: 1; }
-
-/* --- СЛАЙДЕР (ТОП-3) --- */
-.top-slider {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 60px;
-    height: 400px;
+    gap: 12px;
 }
 
-.slide-item {
-    flex: 1;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    text-decoration: none;
-    border: 1px solid #1a1a1a;
-    transition: var(--transition);
+.item-slot img, .weapon-img-info img, .char-item img, .stat-label img {
+    width: 45px;
+    height: 45px;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 8px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
-.slide-item:hover {
-    flex: 2.2;
-    border-color: var(--accent);
-    box-shadow: 0 15px 45px rgba(255, 77, 0, 0.15);
-}
+.stars { color: #ffb400; font-size: 10px; display: block; }
 
-.slide-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
-.slide-item:hover img { transform: scale(1.1); }
-
-.slide-info {
-    position: absolute;
-    bottom: 0; left: 0; width: 100%;
-    padding: 30px;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 30%, transparent);
-}
-
-/* --- СЕТКА ГАЙДОВ И ПРОМО --- */
-.index-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
-}
-
-.game-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    overflow: hidden;
-    text-decoration: none;
-    color: white;
-    border: 1px solid #1a1a1a;
-    transition: var(--transition);
-}
-
-.game-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--accent);
-}
-
-.game-card img { width: 100%; height: 230px; object-fit: cover; }
-.game-card .content { padding: 20px; }
-
-.category-badge {
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.promo-footer-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    margin-bottom: 50px;
-}
-
-/* Адаптация под мобильные */
-@media (max-width: 900px) {
-    .promo-footer-grid {
-        grid-template-columns: 1fr !important;
-    }
-    .top-slider {
-        flex-direction: column;
-        height: auto;
-    }
-    .slide-item { height: 250px; }
-}
 /* --- ФУТЕР --- */
 footer {
     width: 100%;
     padding: 40px 0;
-    background: var(--bg-dark); /* Твой черный фон */
-    border-top: 1px solid #1a1a1a; /* Тонкая линия разделения */
+    background: var(--bg-dark);
+    border-top: 1px solid #1a1a1a;
     margin-top: 60px;
 }
 
 .footer-container {
     max-width: 1400px;
     margin: 0 auto;
-    text-align: center; /* Центрируем текст внутри */
+    text-align: center;
     padding: 0 40px;
 }
 
-.footer-container p {
-    color: #555; /* Делаем текст неярким, чтобы не отвлекал */
-    font-size: 14px;
-    letter-spacing: 1px;
-}
-/* --- СТИЛИ ДЛЯ ГАЙДОВ И БИЛДОВ --- */
-.guide-table-wrapper {
-    background: #0a0a0a; border-radius: 12px; padding: 10px;
-    margin: 20px 0; overflow-x: auto; border: 1px solid #1a1a1a;
-}
-.guide-table { width: 100%;
-     border-collapse: collapse;
-      min-width: 600px; 
-    }
-.guide-table th { 
-    color: var(--accent); 
-    text-align: left; 
-    padding: 15px; 
-    font-size: 12px; 
-    text-transform: uppercase; 
-    border-bottom: 1px solid #1a1a1a; 
-}
-.guide-table td 
-{ 
-    padding: 15px; color: #fff; 
-    border-bottom: 1px solid #111; 
-}
+.footer-container p { color: #555; font-size: 14px; letter-spacing: 1px; }
 
-.item-slot, .stat-label 
-{ 
-    display: flex; align-items: center; gap: 10px; 
-}
-
-.item-slot img, .stat-label img 
-{ 
-    width: 35px; height: 35px; object-fit: contain;
- }
-
-.weapon-img-info { 
-    text-align: center; 
-    width: 110px; 
-}
-.weapon-img-info img { 
-    width: 55px; 
-    height: 55px; 
-    margin-bottom: 5px; 
-    object-fit: contain;
-}
-.stars { 
-    color: #ffb400; 
-    font-size: 10px; 
-    display: block; 
-    margin-bottom: 5px;
-}
-
-.team-row { 
-    display: flex; 
-    gap: 10px; 
-}
-.char-item { 
-    text-align: center; 
-    width: 55px; 
-}
-.char-item img { 
-    width: 48px;
-    height: 48px; 
-    border-radius: 8px; 
-    border: 1px solid #333; 
-    background: #151515; 
-}
-.char-item span { 
-    font-size: 9px; 
-    color: #888; 
-    display: block; 
-    margin-top: 4px; 
-}
-
-/* --- АККОРДЕОНЫ --- */
-.accordion-item { 
-    background: #0f0f0f; 
-    border: 1px solid #1a1a1a; 
-    border-radius: 8px;
-    margin-bottom: 10px; 
-    overflow: hidden; 
-    }
-.accordion-header { 
-    padding: 15px 20px; 
-    display: flex; 
-    justify-content: space-between; 
-    cursor: pointer; 
-}
-.accordion-header h3 { 
-    margin: 0; 
-    font-size: 15px; 
-}
-.accordion-content { 
-    max-height: 0; 
-    overflow: hidden; 
-    padding: 0 20px; 
-    transition: 0.4s ease; 
-    opacity: 0; 
-}
-.accordion-item.active .accordion-content { 
-    max-height: 1000px; 
-    padding: 20px; 
-    opacity: 1; 
-    border-top: 1px solid #222; }
-.accordion-item.active .accordion-header h3 { 
-    color: var(--accent); 
+/* Заголовки в контенте */
+.ck-content h2 {
+    color: #fff;
+    border-left: 4px solid var(--accent);
+    padding-left: 15px;
+    margin: 40px 0 20px;
+    font-size: 24px;
+    font-weight: 900;
 }

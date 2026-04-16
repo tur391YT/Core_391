@@ -2,56 +2,56 @@
 require_once 'config/database.php';
 
 $id = (int)($_GET['id'] ?? 0);
-$post = $id ? $pdo->query("SELECT * FROM posts WHERE id = $id")->fetch() : null;
+$post = null;
+
+if ($id) {
+    $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ?");
+    $stmt->execute([$id]);
+    $post = $stmt->fetch();
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        $_POST['title'], 
-        $_POST['content'], 
-        $_POST['category'], 
-        $_POST['sub_category'], 
-        $_POST['image']
-    ];
-    
-    if ($id) {
-        $data[] = $id;
-        $pdo->prepare("UPDATE posts SET title=?, content=?, category=?, sub_category=?, image=? WHERE id=?")->execute($data);
-    } else {
-        $pdo->prepare("INSERT INTO posts (title, content, category, sub_category, image) VALUES (?,?,?,?,?)")->execute($data);
-        $id = $pdo->lastInsertId();
+    $title = trim($_POST['title']);
+    $content = $_POST['content'];
+    $category = $_POST['category'];
+    $sub_category = $_POST['sub_category'];
+    $image = $_POST['image'];
+
+    if (!empty($title) && !empty($content)) {
+        if ($id) {
+            $sql = "UPDATE posts SET title=?, content=?, category=?, sub_category=?, image=? WHERE id=?";
+            $pdo->prepare($sql)->execute([$title, $content, $category, $sub_category, $image, $id]);
+        } else {
+            $sql = "INSERT INTO posts (title, content, category, sub_category, image) VALUES (?,?,?,?,?)";
+            $pdo->prepare($sql)->execute([$title, $content, $category, $sub_category, $image]);
+            $id = $pdo->lastInsertId();
+        }
+        header("Location: post.php?id=$id"); 
+        exit;
     }
-    header("Location: post.php?id=$id"); 
-    exit;
 }
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $id ? 'Редактировать' : 'Добавить' ?> пост | CORE 391</title>
-    
     <link rel="stylesheet" href="css/admin.css">
-    
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
-    <script src="js/editor-templates.js"></script>
-    <script src="js/admin-core.js"></script>
 </head>
 <body>
-
 <div class="admin-container">
     <h1><?= $id ? 'Редактирование материала' : 'Новая запись' ?></h1>
     
     <form method="POST" class="edit-form">
         <div class="form-group">
             <label>Заголовок статьи</label>
-            <input type="text" name="title" value="<?= htmlspecialchars($post['title'] ?? '') ?>" placeholder="Введите название..." required>
+            <input type="text" name="title" value="<?= htmlspecialchars($post['title'] ?? '') ?>" required>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label>Основная категория</label>
-                <select name="category">
+                <select name="category" id="category-select" class="category-select <?= htmlspecialchars($post['category']??'') ?>">
                     <option value="genshin" <?= ($post['category']??'')=='genshin'?'selected':'' ?>>Genshin Impact</option>
                     <option value="zzz" <?= ($post['category']??'')=='zzz'?'selected':'' ?>>Zenless Zone Zero</option>
                     <option value="wuwa" <?= ($post['category']??'')=='wuwa'?'selected':'' ?>>Wuthering Waves</option>
@@ -60,47 +60,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label>Подкатегория (метка)</label>
-                <input type="text" name="sub_category" value="<?= htmlspecialchars($post['sub_category'] ?? '') ?>" placeholder="Например: Гайды">
+                <input type="text" name="sub_category" value="<?= htmlspecialchars($post['sub_category'] ?? '') ?>">
             </div>
         </div>
 
         <div class="form-group">
-            <label>Имя файла картинки (из папки img/)</label>
-            <input type="text" name="image" value="<?= htmlspecialchars($post['image'] ?? '') ?>" placeholder="banner.png">
+            <label>Ссылка на картинку</label>
+            <input type="text" name="image" id="post_image" value="<?= htmlspecialchars($post['image'] ?? '') ?>">
+            <div class="preview-container">
+                <img id="banner-preview" src="<?= htmlspecialchars($post['image'] ?? '') ?>" 
+                     style="max-width: 300px; margin-top: 10px; border-radius: 10px; <?= empty($post['image']) ? 'display: none;' : '' ?>">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Контент статьи</label>
-            <div class="template-panel">
-                <button type="button" class="template-btn special" onclick="handleInsert('full_guide')">УЛЬТИМАТИВНЫЙ БИЛД</button>
-                <button type="button" class="template-btn" onclick="handleInsert('news')">+ Новость (Аккордеоны)</button>
-                <button type="button" class="template-btn" onclick="handleInsert('tier')">+ Тир-лист</button>
-            </div>
-            
-            <textarea name="content" id="editor"><?= $post['content'] ?? '' ?></textarea>
-            
-            <div class="form-actions">
-                <button type="submit" class="btn-save">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
-                <button type="button" class="template-btn btn-danger" onclick="confirmClear()" style="margin-left: auto; border-color: #ff0000; color: #ff0000;">⚠ ОЧИСТИТЬ ВСЁ</button>
-                <a href="admin.php" class="btn-cancel">Отмена</a>
-            </div>
-        </div>
-    </form>
+       <div class="form-group">
+    <label>Контент статьи</label>
+<div class="template-panel">
+    <button type="button" class="template-btn special" onclick="insertTemplate('full_guide')">УЛЬТИМАТИВНЫЙ БИЛД</button>
+    <button type="button" class="template-btn" onclick="insertTemplate('news')">+ НОВОСТЬ</button>
+    <span style="border-left: 1px solid #333; margin: 0 10px;"></span>
+    <button type="button" class="template-btn" onclick="addRow()" title="Поставьте курсор в таблицу">+ Строка</button>
+    <button type="button" class="template-btn" onclick="deleteRow()" style="color:#ff4444;">- Удалить строку</button>
+    <button type="button" class="template-btn" onclick="execCmd('bold')"><b>B</b></button>
+</div>
+    
+    <div id="visual-editor" contenteditable="true" spellcheck="false"><?= $post['content'] ?? '' ?></div>
+    
+    <input type="hidden" name="content" id="real-content" value="<?= htmlspecialchars($post['content'] ?? '') ?>">
+    
+    <div class="form-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+        <button type="submit" class="btn-save">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+        <button type="button" class="btn-danger" style="background: #ff0000; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="confirmClear()">⚠ ОЧИСТИТЬ</button>
+        <a href="admin.php" class="btn-cancel" style="padding: 20px; text-decoration: none; color: #888;">Отмена</a>
+    </div>
 </div>
 
+<script src="js/admin-core.js?update=<?= time(); ?>"></script>
 <script>
-    /**
-     * Прослойка для вызова функции из внешнего файла js/editor-templates.js
-     * Использует переменную myEditor, которая инициализируется в js/admin-core.js
-     */
-    function handleInsert(type) {
-        if (typeof insertTemplate === 'function' && myEditor) {
-            insertTemplate(type, myEditor);
-        } else {
-            console.error('Ошибка: Редактор или скрипт шаблонов еще не загружены.');
-        }
-    }
+    // Логика переключения категорий (оставляем твою)
+    document.getElementById('category-select').addEventListener('change', function() {
+        this.className = 'category-select ' + this.value;
+    });
 </script>
-
 </body>
 </html>
