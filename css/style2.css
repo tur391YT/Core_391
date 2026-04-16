@@ -1,174 +1,203 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
 :root {
     --accent: #ff4d00;
-    --bg-dark: #050505;
-    --card-bg: #0f0f0f;
-    --header-bg: #0a0a0a;
-    --text-main: #ffffff;
-    --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    --bg: #050505;
+    --card: #0a0a0a;
+    --text: #ffffff;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    line-height: 1.6;
-    overflow-x: hidden;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
 }
 
-/* --- ШАПКА --- */
+/* --- ШАПКА (Навигация) --- */
 header {
-    background: var(--header-bg);
+    background: #000;
     border-bottom: 1px solid #1a1a1a;
-    padding: 12px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    padding: 10px 0;
 }
 
 .header-container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 40px;
+}
+.header-container img { 
+    height: 45px; 
+    width: auto; 
 }
 
-.logo img { height: 42px; display: block; }
-
-.nav-menu { display: flex; gap: 30px; align-items: center; }
-.nav-menu a {
-    color: var(--text-main);
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-    transition: 0.3s;
+.nav-menu {
+    display: flex;
+    gap: 25px;
 }
-.nav-menu a:hover { color: var(--accent); }
 
-/* --- HERO SECTION --- */
+/* --- ГЛАВНЫЙ ЭКРАН С БАННЕРОМ (HERO) --- */
 .hero {
     position: relative;
-    height: 65vh;
-    min-height: 550px;
-    background: url('../img/banner.png') no-repeat center 10% / cover;
+    height: 60vh; /* Высота баннера */
+    min-height: 450px;
+    background: url('../img/banner.png') no-repeat center center / cover; /* Путь к твоей картинке */
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    margin-bottom: -60px;
+    margin-top: -1px; /* Убирает микро-щель между хедером и баннером */
 }
 
+/* Затемнение картинки, чтобы текст читался */
 .hero-overlay {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, rgba(5,5,5,0.2), rgba(5,5,5,1));
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(5,5,5,1));
+    z-index: 1;
 }
 
-.hero-content { position: relative; z-index: 2; }
+.hero-content {
+    position: relative;
+    z-index: 2; /* Текст поверх затемнения */
+}
+
 .hero-content h1 {
     font-size: 82px;
     font-weight: 900;
-    letter-spacing: 5px;
     text-transform: uppercase;
-    text-shadow: 0 0 30px rgba(255, 77, 0, 0.2);
-}
-.accent-text { color: var(--accent); }
-
-/* --- ГИБКИЕ ТАБЛИЦЫ ГАЙДОВ --- */
-.ck-content {
-    color: #fff;
-    font-family: 'Inter', sans-serif;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(255, 77, 0, 0.4);
 }
 
-/* --- ГИБКИЕ ТАБЛИЦЫ ГАЙДОВ --- */
-.guide-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    background: #0a0a0a;
-    border-radius: 12px;
+.hero-content p {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #ccc;
+}
+/* Ссылки без фиолетового цвета */
+a, .nav-menu a {
+    color: var(--text) !important;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+a:hover, .nav-menu a:hover {
+    color: var(--accent) !important;
+}
+
+/* --- КОНТЕНТ --- */
+.main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 50px 30px;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+}
+
+/* --- СЕТКА ИГР --- */
+.index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.game-card {
+    background: var(--card);
     border: 1px solid #1a1a1a;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(255, 77, 0, 0.15);
+}
+
+.game-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    filter: grayscale(20%);
+    transition: 0.4s;
+}
+
+.game-card:hover img { filter: grayscale(0%); }
+
+.game-card .content { padding: 25px; }
+
+.game-card h3 {
+    font-size: 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+/* --- КНОПКА --- */
+.template-btn.special {
+    border: 2px solid var(--accent);
+    color: var(--accent) !important;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: inline-block;
     margin: 20px 0;
 }
 
-.guide-table {
-    width: 100% !important;
-    border-collapse: collapse;
-    text-align: left;
-    table-layout: auto;
+.template-btn.special:hover {
+    background: var(--accent);
+    color: #000 !important;
+}
+
+/* --- ТАБЛИЦЫ --- */
+.guide-table-wrapper {
+    background: #080808;
+    border-radius: 10px;
+    border: 1px solid #111;
+    overflow: hidden;
+    margin-top: 20px;
 }
 
 .guide-table td {
     padding: 15px;
     border-bottom: 1px solid #111;
-    vertical-align: middle;
-    color: #ccc;
+    color: #888;
 }
 
-/* Настройки картинок в таблицах */
-.guide-table td img {
-    /* Убираем жесткую фиксацию, чтобы работал ресайз из JS */
-    max-width: 100%; 
-    height: auto !important; 
-    display: inline-block;
-    background: #151515;
-    border: 1px solid #333;
+.item-slot img {
+    width: 48px;
+    height: 48px;
+    background: #111;
+    border: 1px solid #222;
     border-radius: 8px;
-    object-fit: contain;
-    flex-shrink: 0;
 }
-
-/* Если картинка без ручного размера, даем ей базовый вид */
-.guide-table td img:not([style*="width"]) {
-    width: 45px;
-}
-
-.item-slot, .weapon-img-info, .char-item, .stat-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.item-slot img, .weapon-img-info img, .char-item img, .stat-label img {
-    width: 45px;
-    height: 45px;
-    background: #151515;
-    border: 1px solid #333;
-    border-radius: 8px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.stars { color: #ffb400; font-size: 10px; display: block; }
 
 /* --- ФУТЕР --- */
 footer {
-    width: 100%;
-    padding: 40px 0;
-    background: var(--bg-dark);
     border-top: 1px solid #1a1a1a;
-    margin-top: 60px;
-}
-
-.footer-container {
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 40px 0;
     text-align: center;
-    padding: 0 40px;
-}
-
-.footer-container p { color: #555; font-size: 14px; letter-spacing: 1px; }
-
-/* Заголовки в контенте */
-.ck-content h2 {
-    color: #fff;
-    border-left: 4px solid var(--accent);
-    padding-left: 15px;
-    margin: 40px 0 20px;
-    font-size: 24px;
-    font-weight: 900;
+    margin-top: 60px;
 }
