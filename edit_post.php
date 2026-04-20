@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+
 require_once 'config/database.php';
 require_once 'includes/header.php';
 
@@ -87,16 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </main>
-
-<div id="imageResizerPanel" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; padding: 25px; border: 2px solid #ff4d00; border-radius: 15px; z-index: 10000; width: 320px; box-shadow: 0 0 40px rgba(0,0,0,0.9);">
-    <div style="color: #fff; margin-bottom: 20px; font-weight: bold; text-align: center;">Размер: <span id="sizeValue" style="color: #ff4d00;">100</span>%</div>
-    <input type="range" id="sizeSlider" min="10" max="100" value="100" style="width: 100%; cursor: pointer; accent-color: #ff4d00; margin-bottom: 20px;">
-    <div style="display: flex; gap: 10px;">
-        <button onclick="closeResizer()" style="flex: 1; padding: 12px; background: #333; color: #fff; border: none; border-radius: 8px; cursor: pointer;">ОТМЕНА</button>
-        <button onclick="applySize()" style="flex: 1; padding: 12px; background: #ff4d00; color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">ГОТОВО</button>
-    </div>
-</div>
-<div id="resizerOverlay" onclick="closeResizer()" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 9999;"></div>
 
 <style>
     .custom-editor-box .ed-btn { background: #333; color: #fff; border: 1px solid #444; padding: 7px 14px; cursor: pointer; border-radius: 4px; font-size: 14px; transition: 0.2s; }

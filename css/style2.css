@@ -1,197 +1,154 @@
+/* 1. Сначала ВСЕ импорты */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+@import url('header-new.css');
+@import url('footer.css');
 
-/* --- БАЗОВЫЕ НАСТРОЙКИ --- */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* --- СИСТЕМА ТЕМАТИЗАЦИИ --- */
+:root {
+    --accent-color: #ff4d00; /* Стандарт (Genshin) */
+    --hover-glow: rgba(255, 77, 0, 0.3);
+}
 
+body.wuwa {
+    --accent-color: #a333ff; /* Яркий фиолетовый */
+    --hover-glow: rgba(163, 51, 255, 0.4);
+}
+
+body.zzz {
+    --accent-color: #00beee;
+    --hover-glow: rgba(0, 190, 238, 0.3);
+}
+
+body.star-rail {
+    --accent-color: #8aff67; 
+    --hover-glow: rgba(138, 255, 103, 0.3);
+}
+
+/* Глобальные стили */
 body {
     font-family: 'Inter', sans-serif;
     background-color: #050505;
     color: #ffffff;
-    line-height: 1.5;
+    margin: 0;
+    line-height: 1.6;
 }
 
-/* --- ШАПКА --- */
-header {
-    background: #000;
-    border-bottom: 1px solid #1a1a1a;
-    padding: 15px 0;
+/* Акцентный цвет для заголовков по умолчанию */
+h1, .game-title, .section-title, .category-badge {
+    color: var(--accent-color) !important;
+    transition: color 0.3s ease;
 }
-
-.header-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo img { height: 40px; display: block; }
-
-.nav-links { display: flex; list-style: none; gap: 20px; }
-
-.nav-links a {
-    color: #fff !important;
-    text-decoration: none !important;
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.nav-links a:hover { color: #ff4d00 !important; }
 
 /* --- ГЕРОЙ-БАННЕР --- */
 .hero {
-    height: 350px;
     background-size: cover;
     background-position: center;
+    height: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    text-align: center;
 }
 
-.hero-content { position: relative; z-index: 2; }
-.hero-content h1 { font-size: 48px; font-weight: 900; }
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+    z-index: 1;
+}
 
-/* --- ОСНОВНОЙ КОНТЕНТ --- */
+/* --- ГЛАВНЫЙ ЗАГОЛОВОК (CORE SYSTEM) --- */
+.hero-content h1 {
+    font-size: 56px;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+    z-index: 2;
+    position: relative;
+}
+
+/* ПРИНУДИТЕЛЬНО БЕЛЫЙ SYSTEM НА ГЛАВНОЙ */
+/* Используем специфичный селектор для главной (где у body НЕТ игровых классов) */
+body:not(.wuwa):not(.zzz):not(.genshin):not(.star-rail) .hero-content h1 span {
+    color: #ffffff !important; 
+    display: inline-block;
+    opacity: 1 !important;
+    font-size: inherit;
+    letter-spacing: normal;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+/* --- СПЕЦИФИЧЕСКОЕ ВЫДЕЛЕНИЕ "РАЗДЕЛ" В КАТЕГОРИЯХ --- */
+body.wuwa .hero-content h1 span, 
+body.genshin .hero-content h1 span,
+body.zzz .hero-content h1 span,
+body.star-rail .hero-content h1 span {
+    display: block;
+    font-size: 14px;
+    letter-spacing: 5px;
+    color: #ffffff !important;
+    opacity: 0.6 !important;
+    font-weight: 400;
+    margin-bottom: 5px;
+    order: -1; /* Поднимает слово РАЗДЕЛ над названием игры */
+}
+
+/* --- СЕТКА КАРТОЧЕК --- */
 .main-content {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 30px;
-}
-
-.section-title {
-    color: #ff4d00 !important;
-    text-transform: uppercase;
-    font-weight: 900;
-    font-size: 20px;
-    margin: 30px 0 20px;
-}
-
-/* --- СЕТКА ПОСЛЕДНИХ МАТЕРИАЛОВ (.top-slider) --- */
-.top-slider {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.slide-item {
-    flex: 0 0 380px; /* Тот самый размер */
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.slide-item img {
+    padding: 40px 20px;
     width: 100%;
-    height: 210px;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 1px solid #1a1a1a;
+    box-sizing: border-box;
 }
 
-.slide-info h3 {
-    color: #fff;
-    font-size: 16px;
-    margin-top: 10px;
-}
-
-.category-badge {
-    color: #44aaff; /* Синий цвет из твоего дизайна */
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-/* --- СЕТКА ИГР (.index-grid) --- */
 .index-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 30px;
+    width: 100%;
 }
 
-.game-card { text-decoration: none; }
+.game-card {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.4s;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
 .game-card img {
     width: 100%;
     height: 220px;
     object-fit: cover;
-    border-radius: 12px;
+    display: block;
 }
 
-.game-card h3 { color: #fff; margin-top: 10px; }
-
-/* КНОПКА СОЗДАНИЯ */
-.template-btn.special {
-    background: #ff4d00;
-    color: #fff;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: 900;
-    text-transform: uppercase;
+.game-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 15px 30px var(--hover-glow) !important;
 }
 
-/* --- ТАБЛИЦЫ ДЛЯ ГАЙДОВ --- */
-.entry-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background: #080808;
-}
+/* --- СЛАЙДЕР --- */
+.slider-container { position: relative; overflow: hidden; border-radius: 15px; margin-bottom: 40px; height: 450px; }
+.top-slider { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
+.slide-item { flex: 0 0 100%; position: relative; text-decoration: none; }
+.slide-item img { width: 100%; height: 100%; object-fit: cover; }
+.slide-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); }
+.slider-nav { position: absolute; bottom: 20px; right: 40px; display: flex; gap: 10px; z-index: 10; }
+.nav-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: 0.3s; }
+.nav-dot.active { background: var(--accent-color) !important; transform: scale(1.3); }
 
-.entry-content td {
-    padding: 15px;
-    border: 1px solid #1a1a1a;
-}
-/* --- ЭФФЕКТЫ ПРИ НАВЕДЕНИИ --- */
-.game-card, .slide-item, .post-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-}
-
-.game-card:hover, .slide-item:hover {
-    transform: translateY(-10px) scale(1.02); /* Карточка приподнимается */
-    box-shadow: 0 10px 20px rgba(255, 77, 0, 0.2); /* Оранжевое свечение */
-}
-
-/* --- СЛАЙДЕР НА ГЛАВНОЙ --- */
-.slider-container {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    margin-bottom: 40px;
-}
-
-.top-slider {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    gap: 0; /* Для слайдера лучше убрать зазор между кадрами внутри контейнера */
-}
-
-.slide-item {
-    flex: 0 0 100%; /* Один пост на весь экран слайдера */
-    max-width: 100%;
-    padding: 0 10px;
-}
-
-/* Кнопки переключения */
-.slider-nav {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.nav-dot {
-    width: 12px;
-    height: 12px;
-    background: #222;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.nav-dot.active {
-    background: #ff4d00;
-    transform: scale(1.3);
-}
+/* --- ДИНАМИЧЕСКИЕ ФОНЫ --- */
+body.genshin .hero { background-image: url('../img/banners/genshin_bg.jpg'); }
+body.star-rail .hero { background-image: url('../img/banners/hsr_bg.jpg'); }
+body.zzz .hero { background-image: url('../img/banners/zzz_bg.jpg'); }
+body.wuwa .hero { background-image: url('../img/banners/wuwa_bg.jpg'); }
