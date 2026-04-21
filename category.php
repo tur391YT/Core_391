@@ -55,24 +55,26 @@ if (isset($game_banners[$game])) {
     <div class="index-grid"> 
         <?php if (count($posts) > 0): ?>
             <?php foreach ($posts as $post): ?>
-                <a href="post.php?id=<?= $post['id'] ?>" class="game-card">
-                    <img src="<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
-                    <div class="content">
-                        <span class="category-badge"><?= htmlspecialchars($post['sub_category']) ?></span>
+                <div style="position: relative; display: flex; flex-direction: column;"> 
+                    
+                    <?php if (isset($_SESSION['admin']) && $_SESSION['admin'] === true): ?>
+                        <a href="edit_post.php?id=<?= $post['id'] ?>" class="admin-edit-link">⚙️ ПРАВКА</a>
+                    <?php endif; ?>
+
+                    <a href="post.php?id=<?= $post['id'] ?>" class="game-card">
+                        <img src="<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
                         
-                        <h3><?= htmlspecialchars($post['title']) ?></h3>
-                        
-                        <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1a1a1a; padding-top: 10px;">
-                            <span class="btn-look">СМОТРЕТЬ</span>
+                        <div class="content" style="padding: 10px; display: flex; flex-direction: column; flex-grow: 1;">
+                            <span class="category-badge" style="font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                <?= htmlspecialchars($post['sub_category']) ?>
+                            </span>
                             
-                            <?php if (isset($_SESSION['admin']) && $_SESSION['admin'] === true): ?>
-                                <object>
-                                    <a href="edit_post.php?id=<?= $post['id'] ?>" style="color: #444; font-size: 0.7rem; text-decoration: none;">⚙️ ПРАВКА</a>
-                                </object>
-                            <?php endif; ?>
+                            <h3><?= htmlspecialchars($post['title']) ?></h3>
+                            
+                            <span class="btn-look">СМОТРЕТЬ</span>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             <?php endforeach; ?>
         <?php else: ?>
             <div style="grid-column: 1/-1; text-align: center; padding: 100px 0;">

@@ -12,7 +12,10 @@ $body_class = isset($body_class) ? $body_class : 'default';
 <head>
     <meta charset="UTF-8">
     <title>CORE 391</title>
-    <link rel="stylesheet" href="css/header-new.css?v=3">
+    <link rel="stylesheet" href="css/style2.css?v=<?php echo time(); ?>">
+    
+    <link rel="stylesheet" href="css/header-new.css?v=<?php echo time(); ?>">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
