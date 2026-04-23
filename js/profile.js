@@ -1,43 +1,22 @@
-/**
- * Управление вкладками в профиле CORE SYSTEM
- * Обработка переключений между Обзором и Настройками
- */
-document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('.nav-btn[data-tab]');
-    const contents = document.querySelectorAll('.tab-content');
+document.addEventListener('DOMContentLoaded', function() {
+    const navButtons = document.querySelectorAll('.nav-btn[data-tab]');
+    const tabContents = document.querySelectorAll('.tab-content');
 
-    buttons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            // Предотвращаем стандартное поведение, если это кнопка
-            e.preventDefault();
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
 
-            const target = btn.getAttribute('data-tab');
+            // 1. Убираем активный класс у всех кнопок
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            // 2. Скрываем все вкладки
+            tabContents.forEach(tab => tab.classList.remove('active'));
 
-            // 1. Сброс активных состояний у кнопок
-            buttons.forEach(b => b.classList.remove('active'));
-            
-            // 2. Сброс активных состояний у контента
-            contents.forEach(c => {
-                c.classList.remove('active');
-                // Небольшая задержка для перезапуска анимации появления
-                c.style.opacity = "0";
-            });
-
-            // 3. Активация текущей кнопки
-            btn.classList.add('active');
-
-            // 4. Активация выбранной вкладки по ID
-            const activeTab = document.getElementById(target);
+            // 3. Активируем нужную кнопку и вкладку
+            button.classList.add('active');
+            const activeTab = document.getElementById(targetTab);
             if (activeTab) {
                 activeTab.classList.add('active');
-                // Плавное проявление
-                setTimeout(() => {
-                    activeTab.style.opacity = "1";
-                }, 10);
             }
-
-            // Логи в консоль для отладки (можно потом удалить)
-            console.log(`CORE SYSTEM: Переключение на вкладку [${target}]`);
         });
     });
 });

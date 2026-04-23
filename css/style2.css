@@ -9,9 +9,11 @@
     --hover-glow: rgba(255, 77, 0, 0.3);
 }
 
+/* Добавляем поддержку твоих любимых игр */
 body.wuwa { --accent-color: #a333ff; --hover-glow: rgba(163, 51, 255, 0.4); }
 body.zzz { --accent-color: #00beee; --hover-glow: rgba(0, 190, 238, 0.3); }
 body.star-rail { --accent-color: #8aff67; --hover-glow: rgba(138, 255, 103, 0.3); }
+body.genshin { --accent-color: #ffcc00; --hover-glow: rgba(255, 204, 0, 0.3); }
 body.default { --accent-color: #ff4d00; --hover-glow: rgba(255, 77, 0, 0.3); }
 
 body {
@@ -20,6 +22,7 @@ body {
     color: #ffffff;
     margin: 0;
     line-height: 1.6;
+    overflow-x: hidden; /* Защита от горизонтальной прокрутки */
 }
 
 .game-title, .section-title, .category-badge {
@@ -30,19 +33,19 @@ body {
 /* --- ГЕРОЙ-БАННЕР --- */
 .hero {
     background-size: cover;
-    /* ПОЛОЖЕНИЕ ФОНА ПО УМОЛЧАНИЮ: center (горизонталь) center (вертикаль) */
     background-position: center center; 
     height: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    background-color: #0a0a0a; /* Цвет-заглушка, чтобы не было вспышек при загрузке */
 }
 
 .hero-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
     z-index: 1;
 }
 
@@ -57,9 +60,9 @@ body {
     z-index: 2;
     position: relative;
     color: var(--accent-color) !important;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5); /* Чтобы текст лучше читался на баннерах */
 }
 
-/* Возврат БЕЛОГО цвета слову SYSTEM и другим вложенным span */
 .hero-content h1 span {
     color: #ffffff !important;
     opacity: 1 !important;
@@ -69,10 +72,7 @@ body {
 }
 
 /* Метка РАЗДЕЛ над заголовком */
-body.wuwa .hero-content h1 span.section-label, 
-body.genshin .hero-content h1 span.section-label,
-body.zzz .hero-content h1 span.section-label,
-body.star-rail .hero-content h1 span.section-label {
+span.section-label {
     display: block !important;
     font-size: 14px !important;
     letter-spacing: 5px !important;
@@ -80,14 +80,22 @@ body.star-rail .hero-content h1 span.section-label {
     font-weight: 400 !important;
     margin-bottom: 5px !important;
     order: -1;
+    color: #fff !important;
 }
 
 /* --- СЛАЙДЕР --- */
-.slider-container { position: relative; overflow: hidden; border-radius: 15px; margin-bottom: 40px; height: 450px; }
-.top-slider { display: flex; transition: transform 0.6s ease; height: 100%; }
+.slider-container { 
+    position: relative; 
+    overflow: hidden; 
+    border-radius: 15px; 
+    margin-bottom: 40px; 
+    height: 450px; 
+    background: #0d0d0d; 
+}
+.top-slider { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
 .slide-item { flex: 0 0 100%; position: relative; text-decoration: none; color: #fff !important; }
 .slide-item img { width: 100%; height: 100%; object-fit: cover; }
-.slide-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); }
+.slide-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px; background: linear-gradient(transparent, rgba(0,0,0,0.95)); }
 
 /* --- СЕТКА И КАРТОЧКИ --- */
 .main-content {
@@ -98,16 +106,9 @@ body.star-rail .hero-content h1 span.section-label {
 
 .index-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important; 
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important; 
     gap: 30px !important;
     align-items: stretch;
-}
-
-.index-grid > div {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100% !important;
-    width: 100% !important;
 }
 
 .game-card {
@@ -118,9 +119,10 @@ body.star-rail .hero-content h1 span.section-label {
     display: flex !important;
     flex-direction: column !important;
     text-align: center !important;
-    transition: 0.4s !important;
+    transition: all 0.3s ease !important;
     text-decoration: none !important;
     height: 100% !important;
+    position: relative;
 }
 
 .game-card:hover {
@@ -129,21 +131,35 @@ body.star-rail .hero-content h1 span.section-label {
     box-shadow: 0 10px 30px var(--hover-glow) !important;
 }
 
-.game-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.game-card img { 
+    width: 100%; 
+    height: 200px; 
+    object-fit: cover; 
+    display: block; 
+    background: #111;
+}
 
 .game-card .content {
     padding: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     flex-grow: 1 !important;
-    justify-content: space-between;
 }
 
-.game-card h3 { color: #ffffff !important; margin: 10px 0 !important; font-size: 18px !important; font-weight: 700; }
+.game-card h3 { 
+    color: #ffffff !important; 
+    margin: 10px 0 !important; 
+    font-size: 18px !important; 
+    font-weight: 700; 
+}
+
+/* Исправляем кнопку, чтобы она всегда была внизу карточки */
+.game-card .btn-look {
+    margin-top: auto !important;
+}
 
 .btn-look {
     display: inline-block !important;
-    margin: 15px auto 0 auto !important;
     padding: 10px 30px !important;
     background: transparent !important;
     border: 2px solid var(--accent-color) !important;
@@ -156,46 +172,11 @@ body.star-rail .hero-content h1 span.section-label {
     transition: 0.3s !important;
 }
 
-.game-card:hover .btn-look { background: var(--accent-color) !important; color: #000000 !important; }
+/* --- НАСТРОЙКА ФОНОВ --- */
+/* Проверь правильность путей (../img/ или просто img/) */
 
-.admin-edit-link {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: rgba(0,0,0,0.8);
-    padding: 5px 12px;
-    border-radius: 4px;
-    z-index: 10;
-    font-size: 11px;
-    color: #fff !important;
-    text-decoration: none;
-    border: 1px solid #333;
-}
-
-/* --- НАСТРОЙКА ФОНОВ И ИХ ПОЛОЖЕНИЯ --- */
-
-/* ГЛАВНАЯ (ИНДЕКС) */
-body.default .hero { 
-    background-image: url('../img/banner.png'); 
-    background-position: center 10%; /* МЕНЯЙ ТУТ (например, 70% чтобы спустить) */
-}
-
-/* РАЗДЕЛЫ ИГР */
-body.genshin .hero { 
-    background-image: url('../img/banners/genshin_bg.jpg'); 
-    background-position: center 20%; /* Настройка для Геншина */
-}
-
-body.star-rail .hero { 
-    background-image: url('../img/banners/hsr_bg.jpg'); 
-    background-position: center 50%; /* Настройка для ХСР */
-}
-
-body.zzz .hero { 
-    background-image: url('../img/banners/zzz_bg.jpg'); 
-    background-position: center 40%; /* Настройка для ZZZ */
-}
-
-body.wuwa .hero { 
-    background-image: url('../img/banners/wuwa_bg.jpg'); 
-    background-position: center 50%; /* Настройка для WuWa */
-}
+body.default .hero { background-image: url('../img/banner.png'); background-position: center 10%; }
+body.genshin .hero { background-image: url('../img/banners/genshin_bg.jpg'); background-position: center 20%; }
+body.star-rail .hero { background-image: url('../img/banners/hsr_bg.jpg'); background-position: center 50%; }
+body.zzz .hero { background-image: url('../img/banners/zzz_bg.jpg'); background-position: center 40%; }
+body.wuwa .hero { background-image: url('../img/banners/wuwa_bg.jpg'); background-position: center 50%; }
