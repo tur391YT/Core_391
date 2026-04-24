@@ -11,40 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
     $category = $_POST['category']; 
     $sub_category = $_POST['sub_category'];
-    $image = $_POST['image']; // Обложка
-    $banner_wide = $_POST['banner_wide'];
+    $image = $_POST['image'];
     $content = $_POST['content']; 
 
-    $sql = "INSERT INTO posts (title, category, sub_category, image, banner_wide, content) VALUES (?, ?, ?, ?, ?, ?)";
-    $pdo->prepare($sql)->execute([$title, $category, $sub_category, $image, $banner_wide, $content]);
+    $sql = "INSERT INTO posts (title, category, sub_category, image, content) VALUES (?, ?, ?, ?, ?)";
+    $pdo->prepare($sql)->execute([$title, $category, $sub_category, $image, $content]);
     echo "<script>alert('Гайд опубликован!'); window.location.href='index.php';</script>";
 }
 ?>
 
-<style>
-    .admin-form-container { max-width: 1100px; margin: 20px auto; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 15px; padding: 30px; color: #fff; font-family: 'Segoe UI', sans-serif; }
-    .admin-input { background: #151515; border: 1px solid #222; padding: 12px; color: #fff; border-radius: 6px; width: 100%; box-sizing: border-box; }
-    .form-group label { color: #ff4d00; font-size: 11px; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px; }
-    
-    .editor-toolbar { background: #1a1a1a; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; border: 1px solid #222; border-bottom: none; border-radius: 8px 8px 0 0; position: sticky; top: 0; z-index: 10; }
-    .ed-btn { background: #222; color: #fff; border: 1px solid #444; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; font-weight: bold; }
-    .btn-main { background: #ff4d00 !important; color: #000 !important; }
-    .btn-add { background: #333 !important; border-color: #555 !important; }
-
-    #visual-editor { min-height: 800px; padding: 30px; background: #050505; color: #fff; border: 1px solid #222; border-radius: 0 0 8px 8px; outline: none; line-height: 1.6; }
-    #visual-editor h3 { color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase; margin: 15px 0 20px 0; }
-    
-    .pros-box { border: 1px solid #143314; background: #0a150a; border-radius: 8px; padding: 15px; flex: 1; }
-    .cons-box { border: 1px solid #3d1414; background: #1a0a0a; border-radius: 8px; padding: 15px; flex: 1; }
-    .empty-area { min-height: 30px; margin: 10px 0; border: 1px dashed transparent; }
-    .empty-area:hover { border-color: #444; }
-    
-    table { width:100%; border-collapse:collapse; background:#0c0c0c; border:1px solid #222; margin: 15px 0; table-layout: fixed; }
-    th { color:#ff4d00; font-size:11px; text-transform:uppercase; border:1px solid #222; padding: 10px; text-align: center; background: #111; }
-    td { padding:12px; border:1px solid #222; vertical-align: middle; text-align: center; }
-    
-    .icon-box { width: 50px; height: 50px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; margin: 0 auto 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-</style>
+<link rel="stylesheet" href="css/admin-editor.css">
 
 <main class="main-content">
     <div class="admin-form-container">
@@ -59,7 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" name="image" class="admin-input" placeholder="https://...">
                 </div>
                 <div class="form-group"><label>Игра</label>
-                    <select name="category" class="admin-input"><option value="wuwa">Wuthering Waves</option></select>
+                    <select name="category" class="admin-input">
+                        <option value="wuwa">Wuthering Waves</option>
+                        <option value="genshin">Genshin Impact</option>
+                        <option value="hsr">Honkai: Star Rail</option>
+                    </select>
                 </div>
                 <div class="form-group"><label>Тип</label>
                     <input type="text" name="sub_category" class="admin-input" value="БИЛД">
@@ -69,19 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label>Контент гайда</label>
                 <div class="editor-toolbar">
-                    <button type="button" onclick="applyWuWaTemplate()" class="ed-btn btn-main">📄 ШАБЛОН</button>
+                    <button type="button" onclick="applyWuWaTemplate()" class="ed-btn btn-main">📄 ШАБЛОН (WUWA)</button>
                     <button type="button" onclick="insertImg()" class="ed-btn">🖼️ КАРТИНКА</button>
-                    <button type="button" onclick="addRow('weapon-table')" class="ed-btn btn-add">+ ОРУЖИЕ</button>
-                    <button type="button" onclick="addRow('echo-table')" class="ed-btn btn-add">+ ЭХО</button>
-                    <button type="button" onclick="addRow('team-table')" class="ed-btn btn-add">+ КОМАНДА</button>
+                    <button type="button" onclick="addRow('weapon')" class="ed-btn btn-add">+ ОРУЖИЕ</button>
+                    <button type="button" onclick="addRow('echo')" class="ed-btn btn-add">+ ЭХО</button>
+                    <button type="button" onclick="addRow('team')" class="ed-btn btn-add">+ ОТРЯД</button>
                 </div>
-                <div id="visual-editor" contenteditable="true">
-                    <div class="empty-area">Нажми "ШАБЛОН"...</div>
+                <div id="visual-editor" contenteditable="true" style="min-height: 600px; border: 1px solid #333; padding: 30px; background: #000; color: #fff; outline: none; line-height: 1.6;">
+                    <div class="empty-area" style="color: #444;">Нажми "ШАБЛОН"...</div>
                 </div>
                 <textarea name="content" id="hidden-content" style="display:none;"></textarea>
             </div>
 
-            <button type="submit" class="ed-btn btn-main" style="width:100%; padding:20px; margin-top:20px; font-size: 14px;">ОПУБЛИКОВАТЬ</button>
+            <button type="submit" class="ed-btn btn-main" style="width:100%; padding:20px; margin-top:20px; font-weight: bold;">ОПУБЛИКОВАТЬ ГАЙД</button>
         </form>
     </div>
 </main>
@@ -89,89 +69,189 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
 function applyWuWaTemplate() {
     const template = `
-        <div class="empty-area"></div>
-        <h3>Описание резонатора</h3>
-        <p>Описание...</p>
-
-        <div class="empty-area"></div>
-        <h3>Характеристики резонатора</h3>
-        <p>Приоритет: Крит. шанс -> Крит. урон -> АТК%</p>
-
-        <div class="empty-area"></div>
-        <h3>Преимущества и недостатки резонатора</h3>
-        <div style="display: flex; gap: 20px;">
-            <div class="pros-box"><b style="color:#2ecc71;">Преимущества:</b><ul><li>Плюс</li></ul></div>
-            <div class="cons-box"><b style="color:#e74c3c;">Недостатки:</b><ul><li>Минус</li></ul></div>
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ОПИСАНИЕ РЕЗОНАТОРА</h3>
+        <p>Краткое описание персонажа...</p>
+        
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ХАРАКТЕРИСТИКИ РЕЗОНАТОРА</h3>
+        <p><b>Приоритет:</b> Крит. шанс -> Крит. урон -> ATK%</p>
+        
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ПРЕИМУЩЕСТВА И НЕДОСТАТКИ РЕЗОНАТОРА</h3>
+        <div style="display: flex; gap: 20px; margin: 20px 0;">
+            <div style="flex: 1; background: #051a05; border: 1px solid #0f300f; padding: 15px; border-radius: 8px;">
+                <b style="color: #4CAF50;">Преимущества:</b>
+                <ul style="margin: 10px 0; padding-left: 20px; color: #ddd; font-size: 14px;"><li>Плюс 1</li></ul>
+            </div>
+            <div style="flex: 1; background: #1a0505; border: 1px solid #300f0f; padding: 15px; border-radius: 8px;">
+                <b style="color: #f44336;">Недостатки:</b>
+                <ul style="margin: 10px 0; padding-left: 20px; color: #ddd; font-size: 14px;"><li>Минус 1</li></ul>
+            </div>
         </div>
 
-        <div class="empty-area"></div>
-        <h3>Лучшие билды на резонатора в ВуВе</h3>
-        <p>Текст...</p>
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ЛУЧШИЕ БИЛДЫ НА РЕЗОНАТОРА В ВУВЕ</h3>
+        <p>...</p>
 
-        <div class="empty-area"></div>
-        <h3>Лучшее оружие</h3>
-        <table id="weapon-table">
-            <thead><tr><th>Оружие</th><th>Редкость</th><th>Эффект</th></tr></thead>
-            <tbody><tr>
-                <td><div class="icon-box"></div><b>Название</b></td>
-                <td style="color:#f1c40f;">⭐⭐⭐⭐⭐</td>
-                <td style="text-align:left;">Эффект...</td>
-            </tr></tbody>
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ЛУЧШЕЕ ОРУЖИЕ</h3>
+        <table style="width:100%; border-collapse: collapse; margin: 15px 0; background: #080808; border: 1px solid #1a1a1a;">
+            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 250px;">Оружие</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 150px;">Редкость</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px;">Эффект</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; text-align: center; vertical-align: top;">
+                    <img src="" style="width: 70px; height: 70px; background: #1a1a1a; border-radius: 5px; border: 1px solid #333; margin-bottom: 10px;">
+                    <div style="font-weight: bold; color: #fff; font-size: 14px;">Название оружия</div>
+                    <div style="color: #888; font-size: 11px; margin-top: 5px;">Статы...</div>
+                </td>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; text-align: center; vertical-align: middle; color: #ffb400; font-size: 18px;">⭐⭐⭐⭐⭐</td>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; font-size: 13px; color: #ccc; line-height: 1.5; vertical-align: top;">Эффект...</td>
+            </tr>
         </table>
 
-        <div class="empty-area"></div>
-        <h3>Лучшие Эхо</h3>
-        <table id="echo-table">
-            <thead><tr><th>Соната (Set)</th><th>Рекомендуемые Эхо</th></tr></thead>
-            <tbody><tr>
-                <td><div class="icon-box" style="width:30px; height:30px;"></div>Соната</td>
-                <td>
-                    <div style="background:#151515; padding:10px; border-radius:8px; display:flex; align-items:center; gap:15px; text-align:left;">
-                        <div class="icon-box" style="margin:0;"></div>
-                        <div><b>Монстр</b><br><small>Статы</small></div>
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ЛУЧШИЕ ЭХО</h3>
+        <table style="width:100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #1a1a1a;">
+            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 40%;">Соната (Set)</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px;">Рекомендуемые Эхо</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #1a1a1a; padding: 20px; text-align: center; vertical-align: top;">
+                    <img src="" style="width: 40px; height: 40px; background: #1a1a1a; margin-bottom: 10px;">
+                    <div style="font-weight: bold; color: #fff;">Название сета</div>
+                    <div style="font-size: 11px; color: #888; margin-top: 8px;">2 части: +10%<br>5 частей: +30%</div>
+                </td>
+                <td style="border: 1px solid #1a1a1a; padding: 20px; vertical-align: top; background: #050505;">
+                    <div style="display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="background: #111; padding: 10px; border-radius: 8px; border: 1px solid #222; width: 120px; text-align: center;">
+                            <img src="" style="width: 60px; height: 60px; background: #222; border-radius: 4px;">
+                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя Эхо</div>
+                            <div style="font-size: 10px; color: #888;">Кш / Ку</div>
+                        </div>
+                        <div style="color: #aaa; font-size: 12px; padding-top: 10px;">• Статы остальных слотов...</div>
                     </div>
                 </td>
-            </tr></tbody>
+            </tr>
         </table>
 
-        <div class="empty-area"></div>
-        <h3>Лучшие команды</h3>
-        <table id="team-table">
-            <thead><tr><th>Мейн-ДД</th><th>Сап-ДД</th><th>Сап-ДД / Саппорт</th><th>Саппорт</th></tr></thead>
-            <tbody><tr>
-                <td><div class="icon-box"></div><b>Имя</b><br><small style="color:#888;">Роль</small></td>
-                <td><div class="icon-box"></div><b>Имя</b><br><small style="color:#888;">Роль</small></td>
-                <td><div class="icon-box"></div><b>Имя</b><br><small style="color:#888;">Роль</small></td>
-                <td><div class="icon-box"></div><b>Имя</b><br><small style="color:#888;">Роль</small></td>
-            </tr></tbody>
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ОТРЯДЫ ДЛЯ РЕЗОНАТОРА</h3>
+        <table style="width:100%; border-collapse: collapse; margin: 15px 0; background: #080808; border: 1px solid #1a1a1a;">
+            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 60%;">Персонажи</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px;">Описание команды</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #1a1a1a; padding: 20px; text-align: center;">
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <div style="width: 90px; text-align: center;">
+                            <div style="font-size: 9px; color: #ff4d00; font-weight: bold;">МЕЙН-ДД</div>
+                            <img src="" style="width: 65px; height: 65px; background: #1a1a1a; border-radius: 5px;">
+                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя</div>
+                        </div>
+                        <div style="width: 90px; text-align: center;">
+                            <div style="font-size: 9px; color: #ff4d00; font-weight: bold;">САП-ДД</div>
+                            <img src="" style="width: 65px; height: 65px; background: #1a1a1a; border-radius: 5px;">
+                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя</div>
+                        </div>
+                        <div style="width: 90px; text-align: center;">
+                            <div style="font-size: 9px; color: #ff4d00; font-weight: bold;">САППОРТ</div>
+                            <img src="" style="width: 65px; height: 65px; background: #1a1a1a; border-radius: 5px;">
+                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; vertical-align: top; color: #ccc; font-size: 13px;">Описание...</td>
+            </tr>
         </table>
 
-        <div class="empty-area"></div>
-        <h3>Итог</h3>
-        <p>Вывод...</p>
-        <div class="empty-area"></div>
+        <h3 style="color: #ff4d00; border-left: 4px solid #ff4d00; padding-left: 15px; text-transform: uppercase;">ИТОГ</h3>
+        <p>Резюме по персонажу...</p>
     `;
     document.getElementById('visual-editor').innerHTML = template;
 }
 
-function addRow(tableId) {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-    const tbody = table.querySelector('tbody');
-    const newRow = tbody.insertRow();
+function addRow(type) {
+    const editor = document.getElementById('visual-editor');
+    editor.focus();
 
-    if (tableId === 'weapon-table') {
-        newRow.innerHTML = `<td><div class="icon-box"></div><b>Название</b></td><td style="color:#f1c40f;">⭐⭐⭐⭐⭐</td><td style="text-align:left;">...</td>`;
-    } else if (tableId === 'echo-table') {
-        newRow.innerHTML = `<td><div class="icon-box" style="width:30px; height:30px;"></div>...</td><td><div style="background:#151515; padding:10px; border-radius:8px; display:flex; align-items:center; gap:15px; text-align:left;"><div class="icon-box" style="margin:0;"></div><div><b>...</b><br><small>...</small></div></div></td>`;
-    } else if (tableId === 'team-table') {
-        newRow.innerHTML = `<td><div class="icon-box"></div><b>...</b><br><small style="color:#888;">...</small></td><td><div class="icon-box"></div><b>...</b><br><small style="color:#888;">...</small></td><td><div class="icon-box"></div><b>...</b><br><small style="color:#888;">...</small></td><td><div class="icon-box"></div><b>...</b><br><small style="color:#888;">...</small></td>`;
+    let html = '';
+    if (type === 'weapon') {
+        html = `
+        <table style="width:100%; border-collapse: collapse; margin: 15px 0; background: #080808; border: 1px solid #1a1a1a;">
+            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 250px;">Оружие</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 150px;">Редкость</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px;">Эффект</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; text-align: center; vertical-align: top;">
+                    <img src="" style="width: 70px; height: 70px; background: #1a1a1a; border-radius: 5px; border: 1px solid #333; margin-bottom: 10px;">
+                    <div style="font-weight: bold; color: #fff; font-size: 14px;">Название</div>
+                    <div style="color: #888; font-size: 11px; margin-top: 5px;">Атака: 0 | Крит: 0%</div>
+                </td>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; text-align: center; vertical-align: middle; color: #ffb400; font-size: 18px;">⭐⭐⭐⭐⭐</td>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; font-size: 13px; color: #ccc; line-height: 1.5; vertical-align: top;">Бонусы...</td>
+            </tr>
+        </table>`;
+    } else if (type === 'echo') {
+        html = `
+        <table style="width:100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #1a1a1a;">
+            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 40%;">Соната (Set)</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px;">Рекомендуемые Эхо</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #1a1a1a; padding: 20px; text-align: center; vertical-align: top;">
+                    <img src="" style="width: 40px; height: 40px; background: #1a1a1a; margin-bottom: 10px;">
+                    <div style="font-weight: bold; color: #fff;">Название</div>
+                    <div style="font-size: 11px; color: #888; margin-top: 8px;">Эффект сета...</div>
+                </td>
+                <td style="border: 1px solid #1a1a1a; padding: 20px; vertical-align: top; background: #050505;">
+                    <div style="display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="background: #111; padding: 10px; border-radius: 8px; border: 1px solid #222; width: 120px; text-align: center;">
+                            <img src="" style="width: 60px; height: 60px; background: #222; border-radius: 4px;">
+                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя Эхо</div>
+                        </div>
+                        <div style="color: #aaa; font-size: 12px; padding-top: 10px;">• Статы...</div>
+                    </div>
+                </td>
+            </tr>
+        </table>`;
+    } else if (type === 'team') {
+        html = `
+        <table style="width:100%; border-collapse: collapse; margin: 15px 0; background: #080808; border: 1px solid #1a1a1a;">
+            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
+                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 60%;">Персонажи</th>
+                <th style="border: 1px solid #1a1a1a; padding: 10px;">Описание команды</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #1a1a1a; padding: 20px; text-align: center;">
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        ${['МЕЙН-ДД', 'САП-ДД', 'САППОРТ'].map(role => `
+                        <div style="width: 90px; text-align: center;">
+                            <div style="font-size: 9px; color: #ff4d00; font-weight: bold;">${role}</div>
+                            <img src="" style="width: 65px; height: 65px; background: #1a1a1a; border-radius: 5px; border: 1px solid #333;">
+                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя</div>
+                        </div>`).join('')}
+                    </div>
+                </td>
+                <td style="border: 1px solid #1a1a1a; padding: 15px; vertical-align: top; color: #ccc; font-size: 13px;">Описание...</td>
+            </tr>
+        </table>`;
+    }
+
+    if (!document.execCommand('insertHTML', false, html + '<p><br></p>')) {
+        editor.innerHTML += html + '<p><br></p>';
     }
 }
 
 function insertImg() {
-    const url = prompt("Ссылка на фото:");
-    if(url) document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%; border-radius:10px; margin:20px 0; display:block;">`);
+    const url = prompt("Прямая ссылка на фото:");
+    if(url) {
+        const editor = document.getElementById('visual-editor');
+        editor.focus();
+        const imgHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${url}" style="max-width: 100%; height: auto; border-radius: 8px;"></div>`;
+        document.execCommand('insertHTML', false, imgHtml + '<p><br></p>');
+    }
 }
 
 function prepareContent() {
