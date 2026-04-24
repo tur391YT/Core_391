@@ -1,9 +1,13 @@
 // Переменная для хранения активной картинки
 let activeImage = null;
 
-// Функция форматирования текста
+/**
+ * Основные функции форматирования
+ */
 function formatDoc(cmd, value = null) {
     document.execCommand(cmd, false, value);
+    const editor = document.getElementById('visual-editor');
+    if (editor) editor.focus();
 }
 
 function addLink() {
@@ -13,13 +17,19 @@ function addLink() {
 
 function addImage() {
     const url = prompt("Введите URL картинки:", "https://");
-    if (url) formatDoc('insertImage', url);
+    if (url) {
+        // Вставляем картинку с базовым стилем
+        const imgHTML = `<img src="${url}" style="max-width:100%; height:auto; border-radius:8px; margin:10px 0;">`;
+        document.execCommand('insertHTML', false, imgHTML);
+    }
 }
 
-// --- ЛОГИКА ИЗМЕНЕНИЯ РАЗМЕРА ---
+/**
+ * Логика изменения размера изображений
+ */
 function resizeImage() {
     if (!activeImage) {
-        alert("Сначала кликните по картинке!");
+        alert("Сначала кликните по картинке в редакторе!");
         return;
     }
     const panel = document.getElementById('imageResizerPanel');
@@ -37,9 +47,9 @@ function resizeImage() {
     
     if(slider && display) {
         slider.value = numericValue;
-        display.innerText = numericValue;
+        display.innerText = numericValue + "%";
         slider.oninput = function() {
-            display.innerText = this.value;
+            display.innerText = this.value + "%";
             activeImage.style.width = this.value + "%";
             activeImage.style.height = "auto";
         };
@@ -54,33 +64,34 @@ function closeResizer() {
     if(overlay) overlay.style.display = 'none';
 }
 
-// Ждем загрузки DOM
+/**
+ * Слушатели событий
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const editor = document.getElementById('visual-editor');
     const categorySelect = document.querySelector('select[name="category"]');
     
     if (!editor) return;
 
-    // 1. Выбор картинки в редакторе (с динамической рамкой)
-    editor.addEventListener('mousedown', function(e) {
+    // 1. Выбор картинки (выделение рамкой)
+    editor.addEventListener('click', function(e) {
         if (e.target.tagName === 'IMG') {
             activeImage = e.target;
             
-            // Сбрасываем стили у всех остальных картинок
+            // Сбрасываем стили у всех остальных
             editor.querySelectorAll('img').forEach(img => {
                 img.style.outline = "none";
                 img.style.boxShadow = "none";
             });
 
-            // Определяем цвет на основе выбранной категории
-            const currentThemeColor = (categorySelect && categorySelect.value === 'wuwa') ? '#ffcc00' : '#ff4d00';
+            // Определяем цвет темы
+            const themeColor = (categorySelect && categorySelect.value === 'wuwa') ? '#ffcc00' : '#ff4d00';
             
-            // Применяем обводку и тень в цвет темы
-            e.target.style.outline = `3px solid ${currentThemeColor}`;
-            e.target.style.boxShadow = `0 0 10px ${currentThemeColor}80`; 
-            
-            e.preventDefault(); 
+            // Применяем выделение
+            activeImage.style.outline = `3px solid ${themeColor}`;
+            activeImage.style.boxShadow = `0 0 15px ${themeColor}80`; 
         } else {
+            // Если кликнули не по картинке - снимаем выделение
             activeImage = null;
             editor.querySelectorAll('img').forEach(img => {
                 img.style.outline = "none";
@@ -89,82 +100,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. ДИНАМИЧЕСКАЯ ТЕМА АДМИНКИ
+    // 2. Динамическая тема админки при смене категории
     if (categorySelect) {
-        categorySelect.addEventListener('change', function() {
-            const themeColor = (this.value === 'wuwa') ? '#ffcc00' : '#ff4d00';
+        const updateTheme = () => {
+            const isWuwa = categorySelect.value === 'wuwa';
+            const themeColor = isWuwa ? '#ffcc00' : '#ff4d00';
             
-            // Добавляем класс на body для CSS-переменных
-            if (this.value === 'wuwa') {
-                document.body.classList.add('theme-wuwa');
-            } else {
-                document.body.classList.remove('theme-wuwa');
-            }
+            // Меняем переменные или классы
+            document.body.classList.toggle('theme-wuwa', isWuwa);
 
-            // Прямое изменение элементов
-            const mainTitle = document.querySelector('h1');
-            if (mainTitle) mainTitle.style.color = themeColor;
+            // Перекрашиваем кнопку таблицы и заголовки
+            const buildBtn = document.querySelector('.btn-insert-table') || 
+                             Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('ТАБЛИЦА'));
             
-            const allButtons = document.querySelectorAll('button, .btn-insert-table');
-            allButtons.forEach(btn => {
-                if (btn.innerText.includes('ТАБЛИЦА')) {
-                    btn.style.backgroundColor = themeColor;
-                }
-            });
-            console.log("Тема изменена: " + this.value);
-        });
+            if (buildBtn) buildBtn.style.backgroundColor = themeColor;
+            
+            const headerTitle = document.querySelector('.form-header h2');
+            if (headerTitle) headerTitle.style.borderBottomColor = themeColor;
+        };
+
+        categorySelect.addEventListener('change', updateTheme);
+        updateTheme(); // Запуск при загрузке
     }
 });
 
-// --- УМНАЯ ТАБЛИЦА БИЛДА ---
+/**
+ * Умная таблица билда
+ */
 function insertBuildTable() {
     const categorySelect = document.querySelector('select[name="category"]');
-    const currentCategory = categorySelect ? categorySelect.value : 'default';
+    const isWuwa = categorySelect && categorySelect.value === 'wuwa';
     const editor = document.getElementById('visual-editor');
-    const tableId = 'table-' + Date.now();
-    let tableHTML = '';
+    
+    const color = isWuwa ? '#ffcc00' : '#ff4d00';
+    const label = isWuwa ? 'ЭХО / СОНЕТ' : 'АРТЕФАКТ / ОРУЖИЕ';
 
-    if (currentCategory === 'wuwa') {
-        tableHTML = `
-            <p><br></p>
-            <table id="${tableId}" style="width:100%; border-collapse:collapse; margin: 20px 0; background:#080808; border:1px solid #333;">
-                <thead>
-                    <tr style="background:#1a1a1a;">
-                        <th style="padding:15px; border:1px solid #333; color:#ffcc00; text-transform:uppercase; font-size:12px; width:25%;">ЭХО / СЛОТ</th>
-                        <th style="padding:15px; border:1px solid #333; color:#ffcc00; text-transform:uppercase; font-size:12px;">НАЗВАНИЕ</th>
-                        <th style="padding:15px; border:1px solid #333; color:#ffcc00; text-transform:uppercase; font-size:12px; width:15%;">ТИР</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding:15px; border:1px solid #222; text-align:center; color:#fff;">[IMG]</td>
-                        <td style="padding:15px; border:1px solid #222; color:#fff;">Название Эхо</td>
-                        <td style="padding:15px; border:1px solid #222; text-align:center; color:#ffcc00; font-weight:900;">S+</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p><br></p>`;
-    } else {
-        tableHTML = `
-            <p><br></p>
-            <table id="${tableId}" style="width:100%; border-collapse:collapse; margin: 20px 0; background:#080808; border:1px solid #222;">
+    const tableHTML = `
+        <div class="build-table-container" style="margin: 20px 0;">
+            <table style="width:100%; border-collapse:collapse; background:#0a0a0a; border:1px solid #222; border-radius:8px; overflow:hidden;">
                 <thead>
                     <tr style="background:#111;">
-                        <th style="padding:15px; border:1px solid #222; color:#ff4d00; width:25%;">АРТ</th>
-                        <th style="padding:15px; border:1px solid #222; color:#ff4d00;">НАЗВАНИЕ</th>
-                        <th style="padding:15px; border:1px solid #222; color:#ff4d00; width:15%;">ТИР</th>
+                        <th style="padding:15px; border:1px solid #222; color:${color}; text-transform:uppercase; font-size:12px; width:30%;">${label}</th>
+                        <th style="padding:15px; border:1px solid #222; color:${color}; text-transform:uppercase; font-size:12px;">ХАРАКТЕРИСТИКИ</th>
+                        <th style="padding:15px; border:1px solid #222; color:${color}; text-transform:uppercase; font-size:12px; width:15%;">TIER</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="padding:15px; border:1px solid #222; text-align:center; color:#fff;">[IMG]</td>
-                        <td style="padding:15px; border:1px solid #222; color:#fff;">Название предмета</td>
-                        <td style="padding:15px; border:1px solid #222; text-align:center; color:#ffff00; font-weight:900;">S+</td>
+                        <td style="padding:15px; border:1px solid #222; color:#fff;" contenteditable="true">Название предмета</td>
+                        <td style="padding:15px; border:1px solid #222; color:#ccc;" contenteditable="true">Главные статы...</td>
+                        <td style="padding:15px; border:1px solid #222; text-align:center; color:#ffff00; font-weight:900;" contenteditable="true">S+</td>
                     </tr>
                 </tbody>
             </table>
-            <p><br></p>`;
-    }
+        </div>
+        <p><br></p>
+    `;
 
     if(editor) {
         editor.focus();
@@ -172,16 +163,25 @@ function insertBuildTable() {
     }
 }
 
-// Очистка стилей перед сохранением
-function syncEditor() {
+/**
+ * Подготовка контента перед отправкой в PHP
+ */
+function prepareContent() {
     const visualEditor = document.getElementById('visual-editor');
     const hiddenInput = document.getElementById('hidden-content');
+    
     if (!visualEditor || !hiddenInput) return;
+
+    // Создаем клон для очистки от технических стилей редактора
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = visualEditor.innerHTML;
+
+    // Удаляем рамки выделения с картинок
     tempDiv.querySelectorAll('img').forEach(img => {
         img.style.outline = "none";
         img.style.boxShadow = "none";
+        // Убеждаемся, что пути к картинкам корректны
     });
+
     hiddenInput.value = tempDiv.innerHTML;
 }

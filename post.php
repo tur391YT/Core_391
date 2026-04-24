@@ -45,12 +45,20 @@ $final_bg = !empty($post['banner_wide']) ? $post['banner_wide'] : $post['image']
             <?php endif; ?>
         </div>
         
-        <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #222;">
-            <a href="edit_post.php?id=<?= $post['id'] ?>" style="color: #444; text-decoration: none; font-size: 0.8rem;">
-                ⚙️ Редактировать этот материал
-            </a>
-        </div>
+        <?php if (isset($_SESSION['admin']) && $_SESSION['admin'] === true): ?>
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #222; display: flex; justify-content: flex-end;">
+                <a href="edit_post.php?id=<?= $post['id'] ?>" style="color: #ff4d00; text-decoration: none; font-size: 0.8rem; border: 1px solid #333; padding: 8px 15px; border-radius: 4px; transition: 0.3s;">
+                    ⚙️ РЕДАКТИРОВАТЬ МАТЕРИАЛ
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </main>
+
+<style>
+    .entry-content { color: #ccc; line-height: 1.8; font-size: 1.1rem; }
+    .entry-content img { max-width: 100%; border-radius: 10px; margin: 20px 0; }
+    .post-container-wide a:hover { border-color: #ff4d00 !important; color: #fff !important; }
+</style>
 
 <?php require_once 'includes/footer.php'; ?>

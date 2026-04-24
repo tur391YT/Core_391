@@ -188,9 +188,29 @@ include 'includes/header.php';
 <script>
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.onclick = function() {
-        document.querySelectorAll('.nav-btn, .tab-content').forEach(el => el.classList.remove('active'));
+        // 1. Убираем активный класс у всех кнопок
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        
+        // 2. Скрываем абсолютно все вкладки и убираем у них класс active
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+            tab.style.display = 'none'; 
+        });
+
+        // 3. Делаем активной текущую кнопку
         this.classList.add('active');
-        document.getElementById(this.dataset.tab).classList.add('active');
+        
+        // 4. Находим нужную вкладку по ID, показываем её и добавляем класс
+        const targetId = this.getAttribute('data-tab');
+        const activeTab = document.getElementById(targetId);
+        
+        if (activeTab) {
+            activeTab.style.display = 'block';
+            // Небольшая задержка для плавности анимации (если она есть в CSS)
+            setTimeout(() => {
+                activeTab.classList.add('active');
+            }, 10);
+        }
     };
 });
 </script>
