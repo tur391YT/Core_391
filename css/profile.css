@@ -1,3 +1,7 @@
+/* ==========================================================================
+   CORE 391 — СТИЛИ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ
+   ========================================================================== */
+
 /* 1. БАЗОВАЯ ПЛАНИРОВКА */
 .profile-layout {
     width: 100%;
@@ -185,14 +189,42 @@
     border-radius: 0 8px 8px 0;
 }
 
+/* Общий контейнер списка (убираем маркеры и добавляем отступы) */
+.user-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ДОБАВЛЕНО: Гарантирует идеальное центрирование строк внутри контейнера */
+    gap: 12px;           /* Расстояние между строками */
+}
+
+/* Красивая сбалансированная строка информации */
 .user-details li {
     font-size: 14px;
-    margin-bottom: 15px;
-    color: #999;
     display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #161616;
+    justify-content: space-between; /* Разносит текст и дату по краям */
+    align-items: center;           /* Выравнивает строго по одной горизонтальной линии */
     padding-bottom: 8px;
+    border-bottom: 1px solid #1a1a1a; /* Тонкая, едва заметная стильная линия */
+    width: 100%;
+    max-width: 260px;              /* Ограничиваем ширину, чтобы текст не улетал в бесконечность */
+    margin: 0 auto;                /* Центрируем весь блок внутри правой колонки */
+}
+
+/* Левая текстовая метка */
+.user-details li span {
+    color: #888;                   /* Приглушенный серый, чтобы дата выделялась */
+    font-weight: 500;
+}
+
+/* Правое значение (Дата / Счетчики) */
+.user-details li strong,
+.user-details li font {
+    color: #fff;                   /* Яркий белый цвет для значений */
+    font-weight: 700;              /* ИСПРАВЛЕНО: Объединено в один стандарт плотности (без конфликтов) */
+    letter-spacing: 0.5px;
 }
 
 /* 7. ФОРМЫ (НАСТРОЙКИ) */
@@ -207,7 +239,8 @@
     letter-spacing: 1px;
 }
 
-.form-group input, .form-group select {
+.form-group input, 
+.form-group select {
     width: 100%;
     background: #050505;
     border: 1px solid #222;
@@ -215,10 +248,45 @@
     color: #fff;
     border-radius: 6px;
     outline: none;
-    box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+    box-sizing: border-box; /* Чтобы padding не раздувал ширину инпута */
+    transition: border-color 0.2s;
 }
 
-.form-group input:focus { border-color: var(--accent-color, #ff4d00); }
+.form-group input:focus,
+.form-group select:focus { 
+    border-color: var(--accent-color, #ff4d00); 
+}
+
+/* Многострочное поле для ввода длинного статуса */
+.status-textarea {
+    width: 100%;
+    min-height: 80px;       /* Начальная высота поля */
+    max-height: 200px;      /* Ограничение, чтобы форма не улетела вниз */
+    background: #050505;
+    border: 1px solid #222;
+    padding: 12px;
+    color: #fff;
+    border-radius: 6px;
+    outline: none;
+    box-sizing: border-box;
+    resize: vertical;       /* Разрешаем пользователю растягивать поле только по вертикали */
+    font-family: inherit;   /* Чтобы шрифт был как у остального сайта */
+    font-size: 14px;
+    line-height: 1.4;
+    transition: border-color 0.2s;
+}
+
+.status-textarea:focus {
+    border-color: var(--accent-color, #ff4d00);
+}
+
+/* Стилизация ползунков (range) для корректного отображения */
+.form-group input[type="range"] {
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
 
 .btn-look {
     background: var(--accent-color, #ff4d00);
@@ -230,6 +298,10 @@
     cursor: pointer;
     text-transform: uppercase;
     transition: 0.2s;
+}
+
+.btn-look:hover {
+    filter: brightness(1.1);
 }
 
 .logout-btn-simple {

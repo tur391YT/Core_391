@@ -43,9 +43,6 @@ include 'includes/header.php';
 ?>
 
 <style>
-    .profile-header-card { min-height: 350px !important; background: #0a0a0a; }
-    .profile-banner { height: 240px !important; background-color: #0a0a0a !important; }
-    .avatar-stack { width: 140px; height: 140px; }
     :root {
         --banner-y: <?php echo $b_y; ?>%;
         --av-x: <?php echo $a_x; ?>px;
@@ -140,9 +137,9 @@ include 'includes/header.php';
                             </div>
 
                             <div class="form-group">
-                                <label>Статус</label>
-                                <input type="text" name="status" value="<?php echo htmlspecialchars($userStatus); ?>" style="width: 100%; padding: 8px; background: #111; border: 1px solid #333; color: #fff;">
-                            </div>
+    <label>Статус</label>
+    <textarea name="status" rows="3" class="status-textarea"><?php echo htmlspecialchars($userStatus); ?></textarea>
+</div>
 
                             <div class="form-group">
                                 <label>Пол</label>
@@ -171,16 +168,19 @@ include 'includes/header.php';
             </div>
 
             <aside class="info-side">
-                <div class="side-block">
-                    <h4 class="block-title">Информация</h4>
-                    <ul class="user-details">
-                        <li><span>В системе с:</span> <?php echo $regDate; ?></li>
-                        </ul>
-                </div>
-                <?php if ($isOwner): ?>
-                    <a href="logout.php" class="logout-btn-simple">Выйти из системы</a>
-                <?php endif; ?>
-            </aside>
+    <div class="side-block">
+        <h4 class="block-title">Информация</h4>
+        <ul class="user-details">
+            <li>
+                <span>В системе с:</span> 
+                <strong><?php echo $regDate; ?></strong>
+            </li>
+            </ul>
+    </div>
+    <?php if ($isOwner): ?>
+        <a href="logout.php" class="logout-btn-simple">Выйти из системы</a>
+    <?php endif; ?>
+</aside>
         </div>
     </div>
 </main>
@@ -188,25 +188,20 @@ include 'includes/header.php';
 <script>
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.onclick = function() {
-        // 1. Убираем активный класс у всех кнопок
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         
-        // 2. Скрываем абсолютно все вкладки и убираем у них класс active
         document.querySelectorAll('.tab-content').forEach(tab => {
             tab.classList.remove('active');
             tab.style.display = 'none'; 
         });
 
-        // 3. Делаем активной текущую кнопку
         this.classList.add('active');
         
-        // 4. Находим нужную вкладку по ID, показываем её и добавляем класс
         const targetId = this.getAttribute('data-tab');
         const activeTab = document.getElementById(targetId);
         
         if (activeTab) {
             activeTab.style.display = 'block';
-            // Небольшая задержка для плавности анимации (если она есть в CSS)
             setTimeout(() => {
                 activeTab.classList.add('active');
             }, 10);

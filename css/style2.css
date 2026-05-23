@@ -13,7 +13,7 @@
 body.wuwa { --accent-color: #a333ff; --hover-glow: rgba(163, 51, 255, 0.4); }
 body.zzz { --accent-color: #00beee; --hover-glow: rgba(0, 190, 238, 0.3); }
 body.star-rail { --accent-color: #8aff67; --hover-glow: rgba(138, 255, 103, 0.3); }
-body.genshin { --accent-color: #ffcc00; --hover-glow: rgba(255, 204, 0, 0.3); }
+body.genshin { --accent-color: #f02424; --hover-glow: rgba(207, 0, 0, 0.452); }
 body.default { --accent-color: #ff4d00; --hover-glow: rgba(255, 77, 0, 0.3); }
 
 body {

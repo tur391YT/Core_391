@@ -25,11 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->prepare($update_sql)->execute([$title, $category, $sub_category, $image, $content, $id]);
     echo "<script>alert('Гайд обновлен!'); window.location.href='index.php';</script>";
 }
+
+$is_wuwa = ($post['category'] === 'wuwa');
+$theme_class = $is_wuwa ? 'theme-wuwa' : '';
 ?>
 
 <link rel="stylesheet" href="css/admin-editor.css">
+<link rel="stylesheet" href="css/content-styles.css">
 
-<main class="main-content">
+<main class="main-content <?= $theme_class ?>" id="admin-main-wrapper">
     <div class="admin-form-container">
         <h2 style="color:#ff4d00; margin-bottom:20px;">⚙️ Редактирование гайда</h2>
         <form action="" method="POST" onsubmit="prepareContent()">
@@ -43,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" name="image" class="admin-input" value="<?= htmlspecialchars($post['image']) ?>">
                 </div>
                 <div class="form-group"><label>Игра</label>
-                    <select name="category" class="admin-input">
+                    <select name="category" id="game-category-select" class="admin-input" onchange="updateEditorTheme(this.value)">
                         <option value="wuwa" <?= $post['category'] == 'wuwa' ? 'selected' : '' ?>>Wuthering Waves</option>
                         <option value="genshin" <?= $post['category'] == 'genshin' ? 'selected' : '' ?>>Genshin Impact</option>
                         <option value="hsr" <?= $post['category'] == 'hsr' ? 'selected' : '' ?>>Honkai: Star Rail</option>
@@ -55,14 +59,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label>Редактирование контента</label>
-                <div class="editor-toolbar">
+                <label>Конструктор гайда CORE 391</label>
+                <div class="editor-toolbar" style="background: #111; padding: 10px; border-radius: 6px; margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" onclick="insertSectionTitle()" class="ed-btn">📝 ЗАГЛОВОК</button>
                     <button type="button" onclick="insertImg()" class="ed-btn">🖼️ КАРТИНКА</button>
-                    <button type="button" onclick="addRow('weapon')" class="ed-btn btn-add">+ ОРУЖИЕ</button>
-                    <button type="button" onclick="addRow('echo')" class="ed-btn btn-add">+ ЭХО</button>
-                    <button type="button" onclick="addRow('team')" class="ed-btn btn-add">+ ОТРЯД</button>
+                    <span style="color: #444; align-self: center;">|</span>
+                    <button type="button" onclick="createNewTable('weapon')" class="ed-btn btn-add">📦 СЕКЦИЯ ОРУЖИЯ</button>
+                    <button type="button" onclick="addBlockElement('weapon-row')" class="ed-btn" style="background: #222; color: #ff4d00; border: 1px solid #ff4d00;">+ СТРОКУ ОРУЖИЯ</button>
+                    <span style="color: #444; align-self: center;">|</span>
+                    <button type="button" onclick="createNewTable('echo')" class="ed-btn btn-add">🧬 БЛОК ЭХО</button>
+                    <span style="color: #444; align-self: center;">|</span>
+                    <button type="button" onclick="createNewTable('team')" class="ed-btn btn-add">👥 СЕКЦИЯ ОТРЯДА</button>
+                    <button type="button" onclick="addBlockElement('team-slot')" class="ed-btn" style="background: #1b3d22; color: #fff; border: 1px solid #4caf50;">+ ПЕРСОНАЖА В ОТРЯД</button>
                 </div>
-                <div id="visual-editor" contenteditable="true" style="min-height: 600px; border: 1px solid #333; padding: 30px; background: #000; color: #fff; outline: none; line-height: 1.6;">
+                
+                <div class="entry-content" id="visual-editor" contenteditable="true" style="min-height: 600px; border: 1px solid #333; padding: 30px; background: #070707; color: #fff; outline: none; line-height: 1.6; border-radius: 8px;">
                     <?= $post['content'] ?>
                 </div>
                 <textarea name="content" id="hidden-content" style="display:none;"></textarea>
@@ -74,94 +85,207 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </main>
 
 <script>
-function addRow(type) {
-    const editor = document.getElementById('visual-editor');
-    editor.focus();
+function updateEditorTheme(game) {
+    const wrapper = document.getElementById('admin-main-wrapper');
+    if (game === 'wuwa') wrapper.classList.add('theme-wuwa');
+    else wrapper.classList.remove('theme-wuwa');
+}
 
+function insertSectionTitle() {
+    const titleText = prompt("Введите название секции:", "НОВЫЙ РАЗДЕЛ");
+    if(titleText) insertHtmlAtCursor(`<h3 class="wp-section-title">${titleText}</h3><p><br></p>`);
+}
+
+function createNewTable(type) {
     let html = '';
     if (type === 'weapon') {
         html = `
-        <table style="width:100%; border-collapse: collapse; margin: 15px 0; background: #080808; border: 1px solid #1a1a1a;">
-            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
-                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 250px;">Оружие</th>
-                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 150px;">Редкость</th>
-                <th style="border: 1px solid #1a1a1a; padding: 10px;">Эффект</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #1a1a1a; padding: 15px; text-align: center; vertical-align: top;">
-                    <img src="" style="width: 70px; height: 70px; background: #1a1a1a; border-radius: 5px; border: 1px solid #333; margin-bottom: 10px;">
-                    <div style="font-weight: bold; color: #fff; font-size: 14px;">Название</div>
-                    <div style="color: #888; font-size: 11px; margin-top: 5px;">Статы...</div>
-                </td>
-                <td style="border: 1px solid #1a1a1a; padding: 15px; text-align: center; vertical-align: middle; color: #ffb400; font-size: 18px;">⭐⭐⭐⭐⭐</td>
-                <td style="border: 1px solid #1a1a1a; padding: 15px; font-size: 13px; color: #ccc; line-height: 1.5; vertical-align: top;">Бонусы...</td>
-            </tr>
-        </table>`;
+        <div class="wp-table-wrapper">
+            <table class="wp-table-weapon">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Оружие</th>
+                        <th>Эффект / Характеристики</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="wp-cell-center">
+                            <img src="https://placehold.co/70" class="wp-avatar-img">
+                            <div class="wp-item-name">Название оружия</div>
+                            <div class="wp-stars">⭐⭐⭐⭐⭐</div>
+                            <div class="wp-item-sub">Базовые параметры</div>
+                        </td>
+                        <td class="wp-cell-effect">
+                            <p>Описание пассивного эффекта оружия...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>`;
     } else if (type === 'echo') {
         html = `
-        <table style="width:100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #1a1a1a;">
-            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
-                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 40%;">Соната (Set)</th>
-                <th style="border: 1px solid #1a1a1a; padding: 10px;">Рекомендуемые Эхо</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #1a1a1a; padding: 20px; text-align: center; vertical-align: top;">
-                    <img src="" style="width: 40px; height: 40px; background: #1a1a1a; margin-bottom: 10px;">
-                    <div style="font-weight: bold; color: #fff;">Название</div>
-                    <div style="font-size: 11px; color: #888; margin-top: 8px;">Эффект сета...</div>
-                </td>
-                <td style="border: 1px solid #1a1a1a; padding: 20px; vertical-align: top; background: #050505;">
-                    <div style="display: flex; gap: 20px; align-items: flex-start;">
-                        <div style="background: #111; padding: 10px; border-radius: 8px; border: 1px solid #222; width: 120px; text-align: center;">
-                            <img src="" style="width: 60px; height: 60px; background: #222; border-radius: 4px;">
-                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя Эхо</div>
-                        </div>
-                        <div style="color: #aaa; font-size: 12px; padding-top: 10px;">• Статы...</div>
+        <div class="wp-artifacts-container">
+            <div class="wp-grid-echo">
+                <div class="wp-echo-card-left">
+                    <div class="wp-block-header-text">Комплект</div>
+                    <div class="wp-echo-meta">
+                        <img src="https://placehold.co/60" class="wp-avatar-img circle">
+                        <div class="wp-item-name">Название сета</div>
                     </div>
-                </td>
-            </tr>
-        </table>`;
+                    <div class="wp-set-desc">2 части: Бонус...<br>4 части: Бонус...</div>
+                </div>
+                <div class="wp-echo-card-right">
+                    <div class="wp-block-header-text">Рекомендуемые основные статы</div>
+                    <div class="wp-echo-pool">
+                        <div class="wp-echo-item">
+                            <div class="wp-echo-info">
+                                <div class="wp-echo-stats">Часы: <span style="color:#aaa; font-weight:normal;">АТК% / ВЭ%</span></div>
+                                <div class="wp-echo-stats" style="margin-top:8px;">Кубок: <span style="color:#aaa; font-weight:normal;">Элем. Урон</span></div>
+                                <div class="wp-echo-stats" style="margin-top:8px;">Шапка: <span style="color:#aaa; font-weight:normal;">Крит. Шанс</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
     } else if (type === 'team') {
         html = `
-        <table style="width:100%; border-collapse: collapse; margin: 15px 0; background: #080808; border: 1px solid #1a1a1a;">
-            <tr style="background: #000; color: #ff4d00; font-size: 11px; text-transform: uppercase;">
-                <th style="border: 1px solid #1a1a1a; padding: 10px; width: 60%;">Персонажи</th>
-                <th style="border: 1px solid #1a1a1a; padding: 10px;">Описание команды</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #1a1a1a; padding: 20px; text-align: center;">
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        ${['МЕЙН-ДД', 'САП-ДД', 'САППОРТ'].map(role => `
-                        <div style="width: 90px; text-align: center;">
-                            <div style="font-size: 9px; color: #ff4d00; font-weight: bold;">${role}</div>
-                            <img src="" style="width: 65px; height: 65px; background: #1a1a1a; border-radius: 5px; border: 1px solid #333;">
-                            <div style="font-size: 12px; font-weight: bold; color: #fff; margin-top: 5px;">Имя</div>
-                        </div>`).join('')}
-                    </div>
-                </td>
-                <td style="border: 1px solid #1a1a1a; padding: 15px; vertical-align: top; color: #ccc; font-size: 13px;">Описание...</td>
-            </tr>
-        </table>`;
+        <div class="wp-table-wrapper">
+            <table class="wp-table-team">
+                <thead>
+                    <tr>
+                        <th style="width: 45%;">Компоновка группы</th>
+                        <th>Описание синергии и тактика</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; background: #090909; vertical-align: middle;">
+                            <div class="wp-team-slots">
+                                <div class="wp-slot">
+                                    <span class="wp-slot-role main-dd">Мейн-ДД</span>
+                                    <img src="https://placehold.co/65" class="wp-avatar-img">
+                                    <span class="wp-slot-name">Персонаж 1</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="wp-cell-effect">
+                            Тактика ведения боя данным отрядом...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>`;
+    }
+    insertHtmlAtCursor(html + '<p><br></p>');
+}
+
+// Контекстное добавление элементов по положению курсора
+function addBlockElement(type) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) {
+        alert("Поставьте курсор внутрь нужной таблицы отряда или оружия!");
+        return;
     }
 
-    if (!document.execCommand('insertHTML', false, html + '<p><br></p>')) {
-        editor.innerHTML += html + '<p><br></p>';
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer.nodeType === 3 ? range.commonAncestorContainer.parentNode : range.commonAncestorContainer;
+
+    if (type === 'team-slot') {
+        // Ищем ближайший контейнер слотов отряда
+        const teamSlots = container.closest('.wp-team-slots');
+        if (!teamSlots) {
+            alert("Ошибка: Поставьте курсор в черное поле отряда рядом с персонажами!");
+            return;
+        }
+
+        const role = prompt("Введите роль (main-dd, sub-dd, support):", "sub-dd");
+        const name = prompt("Имя персонажа:", "Новый персонаж");
+        let roleTitle = "Сап-ДД";
+        if (role === 'main-dd') roleTitle = "Мейн-ДД";
+        if (role === 'support') roleTitle = "Саппорт";
+
+        const slotHtml = `
+            <div class="wp-slot">
+                <span class="wp-slot-role ${role}">${roleTitle}</span>
+                <img src="https://placehold.co/65" class="wp-avatar-img">
+                <span class="wp-slot-name">${name}</span>
+            </div>`;
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = slotHtml.trim();
+        teamSlots.appendChild(tempDiv.firstChild);
+    } 
+    
+    else if (type === 'weapon-row') {
+        // Ищем тело таблицы оружия
+        const tbody = container.closest('.wp-table-weapon tbody');
+        if (!tbody) {
+            alert("Ошибка: Поставьте курсор внутрь таблицы оружия!");
+            return;
+        }
+
+        const name = prompt("Название оружия:", "Альтернативное оружие");
+        const stars = prompt("Звезды (например: ⭐⭐⭐⭐):", "⭐⭐⭐⭐");
+
+        const rowHtml = `
+            <tr>
+                <td class="wp-cell-center">
+                    <img src="https://placehold.co/70" class="wp-avatar-img">
+                    <div class="wp-item-name">${name}</div>
+                    <div class="wp-stars">${stars}</div>
+                    <div class="wp-item-sub">Базовые параметры</div>
+                </td>
+                <td class="wp-cell-effect">
+                    <p>Описание пассивного эффекта этого оружия...</p>
+                </td>
+            </tr>`;
+
+        const tempTable = document.createElement('table');
+        tempTable.innerHTML = `<tbody>${rowHtml.trim()}</tbody>`;
+        tbody.appendChild(tempTable.querySelector('tr'));
     }
 }
 
 function insertImg() {
     const url = prompt("Прямая ссылка на фото:");
-    if(url) {
-        const editor = document.getElementById('visual-editor');
-        editor.focus();
-        const imgHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${url}" style="max-width: 100%; height: auto; border-radius: 8px;"></div>`;
-        document.execCommand('insertHTML', false, imgHtml + '<p><br></p>');
+    if(url) insertHtmlAtCursor(`<img src="${url}" alt="Медиа" style="max-width:100%; border-radius:8px;"><p><br></p>`);
+}
+
+function insertHtmlAtCursor(html) {
+    const editor = document.getElementById('visual-editor');
+    editor.focus();
+    if (window.getSelection) {
+        const sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            let range = sel.getRangeAt(0);
+            if (editor.contains(range.commonAncestorContainer)) {
+                range.deleteContents();
+                const el = document.createElement("div");
+                el.innerHTML = html;
+                const frag = document.createDocumentFragment();
+                let node, lastNode;
+                while ((node = el.firstChild)) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+                return;
+            }
+        }
     }
+    editor.innerHTML += html;
 }
 
 function prepareContent() {
     document.getElementById('hidden-content').value = document.getElementById('visual-editor').innerHTML;
 }
 </script>
-
 <?php require_once 'includes/footer.php'; ?>

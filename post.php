@@ -21,7 +21,12 @@ $game_titles = [
 ];
 $display_game = isset($game_titles[$post['category']]) ? $game_titles[$post['category']] : $post['category'];
 $final_bg = !empty($post['banner_wide']) ? $post['banner_wide'] : $post['image'];
+
+$is_wuwa = ($post['category'] === 'wuwa');
+$theme_class = $is_wuwa ? 'theme-wuwa' : '';
 ?>
+
+<link rel="stylesheet" href="css/content-styles.css">
 
 <section class="hero" style="background-image: url('<?= htmlspecialchars($final_bg) ?>');">
     <div class="hero-overlay"></div>
@@ -35,7 +40,7 @@ $final_bg = !empty($post['banner_wide']) ? $post['banner_wide'] : $post['image']
     </div>
 </section>
 
-<main class="main-content">
+<main class="main-content <?= $theme_class ?>">
     <div class="post-container-wide" style="max-width: 1000px; margin: 0 auto;">
         <div class="entry-content">
             <?php if (!empty($post['content'])): ?>
@@ -54,11 +59,5 @@ $final_bg = !empty($post['banner_wide']) ? $post['banner_wide'] : $post['image']
         <?php endif; ?>
     </div>
 </main>
-
-<style>
-    .entry-content { color: #ccc; line-height: 1.8; font-size: 1.1rem; }
-    .entry-content img { max-width: 100%; border-radius: 10px; margin: 20px 0; }
-    .post-container-wide a:hover { border-color: #ff4d00 !important; color: #fff !important; }
-</style>
 
 <?php require_once 'includes/footer.php'; ?>
