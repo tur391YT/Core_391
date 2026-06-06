@@ -28,10 +28,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $is_wuwa = ($post['category'] === 'wuwa');
 $theme_class = $is_wuwa ? 'theme-wuwa' : '';
+
+// Очистка старого контента из базы от инлайновых стилей
+$clean_content = $post['content'];
+$clean_content = preg_replace('/style="[^"]*background:[^"]*#[^"]*"/', '', $clean_content);
+$clean_content = preg_replace('/style="[^"]*color:[^"]*#000[^"]*"/', '', $clean_content);
 ?>
 
 <link rel="stylesheet" href="css/admin-editor.css">
-<link rel="stylesheet" href="css/content-styles.css">
+<link rel="stylesheet" href="css/content-styles.css?v=<?= time() ?>">
 
 <main class="main-content <?= $theme_class ?>" id="admin-main-wrapper">
     <div class="admin-form-container">
@@ -51,6 +56,7 @@ $theme_class = $is_wuwa ? 'theme-wuwa' : '';
                         <option value="wuwa" <?= $post['category'] == 'wuwa' ? 'selected' : '' ?>>Wuthering Waves</option>
                         <option value="genshin" <?= $post['category'] == 'genshin' ? 'selected' : '' ?>>Genshin Impact</option>
                         <option value="hsr" <?= $post['category'] == 'hsr' ? 'selected' : '' ?>>Honkai: Star Rail</option>
+                        <option value="zzz" <?= $post['category'] == 'zzz' ? 'selected' : '' ?>>Zenless Zone Zero</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Тип</label>
@@ -67,28 +73,36 @@ $theme_class = $is_wuwa ? 'theme-wuwa' : '';
                     <button type="button" onclick="createNewTable('weapon')" class="ed-btn btn-add">📦 СЕКЦИЯ ОРУЖИЯ</button>
                     <button type="button" onclick="addBlockElement('weapon-row')" class="ed-btn" style="background: #222; color: #ff4d00; border: 1px solid #ff4d00;">+ СТРОКУ ОРУЖИЯ</button>
                     <span style="color: #444; align-self: center;">|</span>
-                    <button type="button" onclick="createNewTable('echo')" class="ed-btn btn-add">🧬 БЛОК ЭХО</button>
+                    <button type="button" onclick="createNewTable('echo')" class="ed-btn btn-add">🧬 БЛОК ЭХО/АРТЕФАКТОВ</button>
                     <span style="color: #444; align-self: center;">|</span>
                     <button type="button" onclick="createNewTable('team')" class="ed-btn btn-add">👥 СЕКЦИЯ ОТРЯДА</button>
                     <button type="button" onclick="addBlockElement('team-slot')" class="ed-btn" style="background: #1b3d22; color: #fff; border: 1px solid #4caf50;">+ ПЕРСОНАЖА В ОТРЯД</button>
+                    <button type="button" onclick="clearEditor()" class="ed-btn" style="background: #2a0808; color: #ff4a4a; border-color: #5c1313; margin-left: auto;">❌ ОЧИСТИТЬ</button>
                 </div>
                 
                 <div class="entry-content" id="visual-editor" contenteditable="true" style="min-height: 600px; border: 1px solid #333; padding: 30px; background: #070707; color: #fff; outline: none; line-height: 1.6; border-radius: 8px;">
-                    <?= $post['content'] ?>
+                    <?= $clean_content ?>
                 </div>
                 <textarea name="content" id="hidden-content" style="display:none;"></textarea>
             </div>
 
-            <button type="submit" class="ed-btn btn-main" style="width:100%; padding:20px; margin-top:20px;">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+            <button type="submit" class="ed-btn btn-main" style="width:100%; padding:20px; margin-top:20px; font-weight: bold; text-transform: uppercase;">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
         </form>
     </div>
 </main>
 
 <script>
+// Полная зеркальная JS-логика для бесшовного редактирования
 function updateEditorTheme(game) {
     const wrapper = document.getElementById('admin-main-wrapper');
     if (game === 'wuwa') wrapper.classList.add('theme-wuwa');
     else wrapper.classList.remove('theme-wuwa');
+}
+
+function clearEditor() {
+    if(confirm("Полностью очистить редактор? Все изменения будут потеряны.")) {
+        document.getElementById('visual-editor').innerHTML = '<p><br></p>';
+    }
 }
 
 function insertSectionTitle() {
@@ -140,9 +154,9 @@ function createNewTable(type) {
                     <div class="wp-echo-pool">
                         <div class="wp-echo-item">
                             <div class="wp-echo-info">
-                                <div class="wp-echo-stats">Часы: <span style="color:#aaa; font-weight:normal;">АТК% / ВЭ%</span></div>
-                                <div class="wp-echo-stats" style="margin-top:8px;">Кубок: <span style="color:#aaa; font-weight:normal;">Элем. Урон</span></div>
-                                <div class="wp-echo-stats" style="margin-top:8px;">Шапка: <span style="color:#aaa; font-weight:normal;">Крит. Шанс</span></div>
+                                <div class="wp-echo-stats">Часы / 4-Cost: <span style="color:#aaa; font-weight:normal;">АТК% / Криты</span></div>
+                                <div class="wp-echo-stats" style="margin-top:8px;">Кубок / 3-Cost: <span style="color:#aaa; font-weight:normal;">Элем. Урон</span></div>
+                                <div class="wp-echo-stats" style="margin-top:8px;">Шапка / 1-Cost: <span style="color:#aaa; font-weight:normal;">АТК%</span></div>
                             </div>
                         </div>
                     </div>
@@ -155,7 +169,7 @@ function createNewTable(type) {
             <table class="wp-table-team">
                 <thead>
                     <tr>
-                        <th style="width: 45%;">Компоновка группы</th>
+                        <th style="width: 35%;">Компоновка группы</th>
                         <th>Описание синергии и тактика</th>
                     </tr>
                 </thead>
@@ -163,7 +177,7 @@ function createNewTable(type) {
                     <tr>
                         <td style="padding: 10px; background: #090909; vertical-align: middle;">
                             <div class="wp-team-slots">
-                                <div class="wp-slot">
+                                <div class="wp-slot" contenteditable="false">
                                     <span class="wp-slot-role main-dd">Мейн-ДД</span>
                                     <img src="https://placehold.co/65" class="wp-avatar-img">
                                     <span class="wp-slot-name">Персонаж 1</span>
@@ -181,11 +195,10 @@ function createNewTable(type) {
     insertHtmlAtCursor(html + '<p><br></p>');
 }
 
-// Контекстное добавление элементов по положению курсора
 function addBlockElement(type) {
     const selection = window.getSelection();
     if (!selection.rangeCount) {
-        alert("Поставьте курсор внутрь нужной таблицы отряда или оружия!");
+        alert("Поставьте курсор внутрь нужной таблицы или блока!");
         return;
     }
 
@@ -193,33 +206,50 @@ function addBlockElement(type) {
     const container = range.commonAncestorContainer.nodeType === 3 ? range.commonAncestorContainer.parentNode : range.commonAncestorContainer;
 
     if (type === 'team-slot') {
-        // Ищем ближайший контейнер слотов отряда
         const teamSlots = container.closest('.wp-team-slots');
         if (!teamSlots) {
-            alert("Ошибка: Поставьте курсор в черное поле отряда рядом с персонажами!");
+            alert("Ошибка: Поставьте курсор в поле отряда рядом с другими персонажами!");
             return;
         }
 
-        const role = prompt("Введите роль (main-dd, sub-dd, support):", "sub-dd");
         const name = prompt("Имя персонажа:", "Новый персонаж");
-        let roleTitle = "Сап-ДД";
-        if (role === 'main-dd') roleTitle = "Мейн-ДД";
-        if (role === 'support') roleTitle = "Саппорт";
+        if (!name) return;
+
+        const roleInput = prompt("Выберите роль цифрой:\n1 - Мейн-ДД (main-dd)\n2 - Сап-ДД (sub-dd)\n3 - Саппорт (support)\n4 - Саппорт/Хил (heal)", "4");
+        if (!roleInput) return;
+
+        let imgUrl = prompt("URL аватарки персонажа (оставьте пустым для заглушки):");
+        if (!imgUrl || imgUrl.trim() === "") {
+            imgUrl = "https://placehold.co/65";
+        }
+
+        let roleTitle = "Саппорт/Хил";
+        let roleClass = "heal";
+        
+        if (roleInput === '1' || roleInput === 'main-dd') {
+            roleTitle = "Мейн-ДД";
+            roleClass = "main-dd";
+        } else if (roleInput === '2' || roleInput === 'sub-dd') {
+            roleTitle = "Сап-ДД";
+            roleClass = "sub-dd";
+        } else if (roleInput === '3' || roleInput === 'support') {
+            roleTitle = "Саппорт";
+            roleClass = "support";
+        }
 
         const slotHtml = `
-            <div class="wp-slot">
-                <span class="wp-slot-role ${role}">${roleTitle}</span>
-                <img src="https://placehold.co/65" class="wp-avatar-img">
+            <div class="wp-slot" contenteditable="false">
+                <span class="wp-slot-role ${roleClass}">${roleTitle}</span>
+                <img src="${imgUrl}" class="wp-avatar-img">
                 <span class="wp-slot-name">${name}</span>
             </div>`;
         
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = slotHtml.trim();
-        teamSlots.appendChild(tempDiv.firstChild);
+        const template = document.createElement('template');
+        template.innerHTML = slotHtml.trim();
+        teamSlots.appendChild(template.content.firstChild);
     } 
     
     else if (type === 'weapon-row') {
-        // Ищем тело таблицы оружия
         const tbody = container.closest('.wp-table-weapon tbody');
         if (!tbody) {
             alert("Ошибка: Поставьте курсор внутрь таблицы оружия!");
@@ -227,12 +257,18 @@ function addBlockElement(type) {
         }
 
         const name = prompt("Название оружия:", "Альтернативное оружие");
+        if (!name) return;
+
         const stars = prompt("Звезды (например: ⭐⭐⭐⭐):", "⭐⭐⭐⭐");
+        let imgUrl = prompt("URL иконки оружия:");
+        if (!imgUrl || imgUrl.trim() === "") {
+            imgUrl = "https://placehold.co/70";
+        }
 
         const rowHtml = `
             <tr>
                 <td class="wp-cell-center">
-                    <img src="https://placehold.co/70" class="wp-avatar-img">
+                    <img src="${imgUrl}" class="wp-avatar-img">
                     <div class="wp-item-name">${name}</div>
                     <div class="wp-stars">${stars}</div>
                     <div class="wp-item-sub">Базовые параметры</div>
@@ -242,15 +278,15 @@ function addBlockElement(type) {
                 </td>
             </tr>`;
 
-        const tempTable = document.createElement('table');
-        tempTable.innerHTML = `<tbody>${rowHtml.trim()}</tbody>`;
-        tbody.appendChild(tempTable.querySelector('tr'));
+        const template = document.createElement('template');
+        template.innerHTML = rowHtml.trim();
+        tbody.appendChild(template.content.firstChild);
     }
 }
 
 function insertImg() {
-    const url = prompt("Прямая ссылка на фото:");
-    if(url) insertHtmlAtCursor(`<img src="${url}" alt="Медиа" style="max-width:100%; border-radius:8px;"><p><br></p>`);
+    const url = prompt("Прямая ссылка на изображение:");
+    if(url) insertHtmlAtCursor(`<img src="${url}" alt="Медиа"><p><br></p>`);
 }
 
 function insertHtmlAtCursor(html) {
@@ -262,14 +298,14 @@ function insertHtmlAtCursor(html) {
             let range = sel.getRangeAt(0);
             if (editor.contains(range.commonAncestorContainer)) {
                 range.deleteContents();
-                const el = document.createElement("div");
-                el.innerHTML = html;
-                const frag = document.createDocumentFragment();
-                let node, lastNode;
-                while ((node = el.firstChild)) {
-                    lastNode = frag.appendChild(node);
-                }
+                
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const frag = template.content;
+                
+                const lastNode = frag.lastChild;
                 range.insertNode(frag);
+                
                 if (lastNode) {
                     range = range.cloneRange();
                     range.setStartAfter(lastNode);
@@ -285,7 +321,17 @@ function insertHtmlAtCursor(html) {
 }
 
 function prepareContent() {
-    document.getElementById('hidden-content').value = document.getElementById('visual-editor').innerHTML;
+    const editor = document.getElementById('visual-editor');
+    const clone = editor.cloneNode(true);
+    
+    clone.querySelectorAll('div:not(.wp-slot):not(.wp-team-slots):not(.wp-table-wrapper)').forEach(el => {
+        if (el.innerHTML.trim() === "" || el.innerHTML === "<br>") {
+            el.remove();
+        }
+    });
+
+    document.getElementById('hidden-content').value = clone.innerHTML;
 }
 </script>
+
 <?php require_once 'includes/footer.php'; ?>
