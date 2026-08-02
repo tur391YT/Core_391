@@ -11,7 +11,9 @@ if ($id > 0) {
     $post = $stmt->fetch();
 }
 
-if (!$post) { die("Гайд не найден."); }
+if (!$post) { 
+    die("Гайд не найден."); 
+}
 
 $game_titles = [
     "genshin" => "Genshin Impact",
@@ -19,6 +21,7 @@ $game_titles = [
     "wuwa"    => "Wuthering Waves",
     "hsr"     => "Honkai Star Rail"
 ];
+
 $display_game = isset($game_titles[$post['category']]) ? $game_titles[$post['category']] : $post['category'];
 $final_bg = !empty($post['banner_wide']) ? $post['banner_wide'] : $post['image'];
 

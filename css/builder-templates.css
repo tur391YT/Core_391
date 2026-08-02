@@ -20,7 +20,8 @@
 }
 
 /* Базовые таблицы */
-.wp-table-weapon, .wp-table-team {
+.wp-table-weapon, 
+.wp-table-team {
     width: 100%;
     border-collapse: collapse;
     background: #0a0a0a;
@@ -29,7 +30,8 @@
     overflow: hidden;
 }
 
-.wp-table-weapon th, .wp-table-team th {
+.wp-table-weapon th, 
+.wp-table-team th {
     background: #0d0d0d;
     padding: 12px 15px;
     font-size: 11px;
@@ -40,7 +42,8 @@
     border-bottom: 1px solid #1a1a1a;
 }
 
-.wp-table-weapon td, .wp-table-team td {
+.wp-table-weapon td, 
+.wp-table-team td {
     padding: 20px;
     border: 1px solid #1a1a1a;
     vertical-align: top;
@@ -113,7 +116,8 @@
     overflow: hidden;
 }
 
-.wp-echo-card-left, .wp-echo-card-right {
+.wp-echo-card-left, 
+.wp-echo-card-right {
     background: #0d0d0d;
     padding: 15px 20px;
 }
@@ -213,4 +217,27 @@
     font-weight: 700;
     color: #fff;
     margin-top: 4px;
+}
+
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+@media (max-width: 768px) {
+    .wp-grid-echo {
+        grid-template-columns: 1fr;
+    }
+    
+    .wp-team-slots {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .wp-cell-center {
+        width: 100%;
+    }
+
+    .wp-table-weapon td, 
+    .wp-table-team td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
 }

@@ -10,10 +10,10 @@ $game = isset($_GET['game']) ? trim($_GET['game']) : 'zzz';
 
 // Настройки соответствия ключа в базе, заголовка и класса темы
 $game_settings = [
-    "genshin"   => ["title" => "Genshin Impact", "class" => "genshin"],
-    "zzz"       => ["title" => "Zenless Zone Zero", "class" => "zzz"],
-    "wuwa"      => ["title" => "Wuthering Waves", "class" => "wuwa"],
-    "hsr"       => ["title" => "Honkai Star Rail", "class" => "star-rail"]
+    "genshin" => ["title" => "Genshin Impact", "class" => "genshin"],
+    "zzz"     => ["title" => "Zenless Zone Zero", "class" => "zzz"],
+    "wuwa"    => ["title" => "Wuthering Waves", "class" => "wuwa"],
+    "hsr"     => ["title" => "Honkai Star Rail", "class" => "star-rail"]
 ];
 
 // Установка заголовка и класса для body
@@ -47,14 +47,24 @@ if (isset($game_banners[$game])) {
 <section class="hero" style="background-image: url('<?= htmlspecialchars($hero_bg) ?>');">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-       <h1><span>РАЗДЕЛ:</span> <?php echo $current_title; ?></h1>
+        <h1><span>РАЗДЕЛ:</span> <?= htmlspecialchars($current_title); ?></h1>
     </div>
 </section>
 
 <main class="main-content">
     <div class="index-grid"> 
-        <?php if (count($posts) > 0): ?>
+        <?php if (!empty($posts)): ?>
             <?php foreach ($posts as $post): ?>
+                <?php 
+                    $img_path = $post['image'] ?? '';
+                    if (!empty($img_path)) {
+                        if (!filter_var($img_path, FILTER_VALIDATE_URL) && strpos($img_path, 'img/') !== 0 && strpos($img_path, '/') !== 0) {
+                            $img_path = 'img/' . $img_path;
+                        }
+                    } else {
+                        $img_path = 'img/default-banner.png';
+                    }
+                ?>
                 <div style="position: relative; display: flex; flex-direction: column;"> 
                     
                     <?php if (isset($_SESSION['admin']) && $_SESSION['admin'] === true): ?>
@@ -62,11 +72,11 @@ if (isset($game_banners[$game])) {
                     <?php endif; ?>
 
                     <a href="post.php?id=<?= $post['id'] ?>" class="game-card">
-                        <img src="<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
                         
                         <div class="content" style="padding: 10px; display: flex; flex-direction: column; flex-grow: 1;">
                             <span class="category-badge" style="font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                <?= htmlspecialchars($post['sub_category']) ?>
+                                <?= htmlspecialchars($post['sub_category'] ?? 'ГАЙД') ?>
                             </span>
                             
                             <h3><?= htmlspecialchars($post['title']) ?></h3>

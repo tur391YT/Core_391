@@ -28,13 +28,19 @@ require_once 'includes/header.php';
             <?php if (!empty($slider_posts)): ?>
                 <?php foreach ($slider_posts as $post): ?>
                     <?php 
-                        $img_path = $post['image'];
-                        if (!filter_var($img_path, FILTER_VALIDATE_URL)) {
-                            $img_path = 'img/' . $img_path;
+                        $img_path = $post['image'] ?? '';
+                        
+                        if (!empty($img_path)) {
+                            // Если это не абсолютный URL и не начинается с img/ или /, добавляем img/
+                            if (!filter_var($img_path, FILTER_VALIDATE_URL) && strpos($img_path, 'img/') !== 0 && strpos($img_path, '/') !== 0) {
+                                $img_path = 'img/' . $img_path;
+                            }
+                        } else {
+                            $img_path = 'img/default-banner.png';
                         }
                     ?>
                     <a href="post.php?id=<?= $post['id'] ?>" class="slide-item">
-                        <img src="<?= htmlspecialchars($img_path ?: 'img/default-banner.png') ?>">
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
                         <div class="slide-info">
                             <span class="category-badge">
                                 <?= htmlspecialchars($post['sub_category'] ?? 'ГАЙДЫ') ?>
@@ -49,7 +55,7 @@ require_once 'includes/header.php';
         </div>
 
         <div class="slider-nav">
-            <?php for($i = 0; $i < count($slider_posts); $i++): ?>
+            <?php for ($i = 0; $i < count($slider_posts); $i++): ?>
                 <div class="nav-dot" onclick="currentSlide(<?= $i ?>)"></div>
             <?php endfor; ?>
         </div>
@@ -100,7 +106,7 @@ function currentSlide(n) {
 }
 
 function updateSlider() {
-    if(!slider) return;
+    if (!slider) return;
     slider.style.transform = `translateX(-${slideIndex * 100}%)`;
     dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === slideIndex);

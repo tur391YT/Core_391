@@ -9,7 +9,7 @@
     --hover-glow: rgba(255, 77, 0, 0.3);
 }
 
-/* Добавляем поддержку твоих любимых игр */
+/* Поддержка игровых тем */
 body.wuwa { --accent-color: #a333ff; --hover-glow: rgba(163, 51, 255, 0.4); }
 body.zzz { --accent-color: #00beee; --hover-glow: rgba(0, 190, 238, 0.3); }
 body.star-rail { --accent-color: #8aff67; --hover-glow: rgba(138, 255, 103, 0.3); }
@@ -39,7 +39,7 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    background-color: #0a0a0a; /* Цвет-заглушка, чтобы не было вспышек при загрузке */
+    background-color: #0a0a0a; /* Цвет-заглушка */
 }
 
 .hero-overlay {
@@ -60,7 +60,7 @@ body {
     z-index: 2;
     position: relative;
     color: var(--accent-color) !important;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.5); /* Чтобы текст лучше читался на баннерах */
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
 .hero-content h1 span {
@@ -92,10 +92,34 @@ span.section-label {
     height: 450px; 
     background: #0d0d0d; 
 }
-.top-slider { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
-.slide-item { flex: 0 0 100%; position: relative; text-decoration: none; color: #fff !important; }
-.slide-item img { width: 100%; height: 100%; object-fit: cover; }
-.slide-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px; background: linear-gradient(transparent, rgba(0,0,0,0.95)); }
+
+.top-slider { 
+    display: flex; 
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+    height: 100%; 
+}
+
+.slide-item { 
+    flex: 0 0 100%; 
+    position: relative; 
+    text-decoration: none; 
+    color: #fff !important; 
+}
+
+.slide-item img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+
+.slide-info { 
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    padding: 40px; 
+    background: linear-gradient(transparent, rgba(0,0,0,0.95)); 
+}
 
 /* --- СЕТКА И КАРТОЧКИ --- */
 .main-content {
@@ -153,7 +177,7 @@ span.section-label {
     font-weight: 700; 
 }
 
-/* Исправляем кнопку, чтобы она всегда была внизу карточки */
+/* Кнопка подгоняется в самый низ */
 .game-card .btn-look {
     margin-top: auto !important;
 }
@@ -172,11 +196,38 @@ span.section-label {
     transition: 0.3s !important;
 }
 
-/* --- НАСТРОЙКА ФОНОВ --- */
-/* Проверь правильность путей (../img/ или просто img/) */
+.btn-look:hover {
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+}
 
+/* --- НАСТРОЙКА ФОНОВ --- */
 body.default .hero { background-image: url('../img/banner.png'); background-position: center 10%; }
 body.genshin .hero { background-image: url('../img/banners/genshin_bg.jpg'); background-position: center 20%; }
 body.star-rail .hero { background-image: url('../img/banners/hsr_bg.jpg'); background-position: center 50%; }
 body.zzz .hero { background-image: url('../img/banners/zzz_bg.jpg'); background-position: center 40%; }
 body.wuwa .hero { background-image: url('../img/banners/wuwa_bg.jpg'); background-position: center 50%; }
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .hero {
+        height: 280px;
+    }
+    
+    .hero-content h1 {
+        font-size: 32px;
+    }
+
+    .slider-container {
+        height: 280px;
+    }
+
+    .slide-info {
+        padding: 20px;
+    }
+
+    .index-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}

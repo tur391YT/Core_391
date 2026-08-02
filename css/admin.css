@@ -20,18 +20,21 @@ body {
 }
 
 /* --- КОНТЕЙНЕР АДМИНКИ --- */
-.admin-container {
+.admin-container, 
+.admin-form-container {
     width: 100%;
-    max-width: 1200px; /* Увеличен до максимума для удобства таблиц */
+    max-width: 1200px;
     margin: 20px auto;
     background: var(--bg-card);
     padding: 40px;
     border-radius: 15px;
     border: 1px solid #1a1a1a;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
 }
 
-.admin-container h1 {
+.admin-container h1, 
+.admin-form-container h2 {
     font-weight: 900;
     text-transform: uppercase;
     color: var(--accent);
@@ -61,7 +64,8 @@ body {
 }
 
 input[type="text"], 
-select {
+select, 
+.admin-input {
     width: 100%;
     padding: 16px;
     background: var(--bg-input);
@@ -73,20 +77,24 @@ select {
     box-sizing: border-box;
 }
 
-input:focus, select:focus {
+input:focus, 
+select:focus, 
+.admin-input:focus {
     outline: none;
     border-color: var(--accent);
     background: #1a1a1a;
 }
 
 /* --- КНОПКИ И ШАБЛОНЫ --- */
-.template-panel {
+.template-panel, 
+.editor-toolbar {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
 }
 
-.template-btn {
+.template-btn, 
+.ed-btn {
     background: #1a1a1a;
     border: 1px solid #333;
     color: #888;
@@ -96,18 +104,29 @@ input:focus, select:focus {
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
-.template-btn:hover {
+.template-btn:hover, 
+.ed-btn:hover {
     border-color: var(--accent);
     color: #fff;
     background: #222;
 }
 
-.template-btn.special {
+.template-btn.special, 
+.ed-btn.btn-main {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+.ed-btn.btn-main {
+    background: #1a0a00;
+}
+
+.ed-btn.btn-main:hover {
+    background: var(--accent);
+    color: #fff;
 }
 
 .btn-save {
@@ -142,8 +161,8 @@ input:focus, select:focus {
 }
 
 /* --- CORE 391 VISUAL EDITOR --- */
-/* Добавь это, чтобы стили применялись и к редактору, и к готовому посту */
-#visual-editor, .ck-content {
+#visual-editor, 
+.ck-content {
     color: #fff;
     font-family: 'Inter', sans-serif;
 }
@@ -206,15 +225,32 @@ input:focus, select:focus {
 /* Специфические колонки */
 #visual-editor .guide-table th:nth-child(1),
 #visual-editor .guide-table td:nth-child(1) {
-    width: 110px; /* Уровень */
+    width: 110px;
 }
 
 #visual-editor .guide-table th:nth-child(3),
 #visual-editor .guide-table td:nth-child(3) {
-    width: 200px; /* Валюта */
+    width: 200px;
     white-space: nowrap;
 }
 
 #visual-editor .guide-table td:nth-child(2) {
-    text-align: left; /* Ресурсы */
+    text-align: left;
+}
+
+/* --- АДАПТИВНОСТЬ --- */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 10px;
+    }
+
+    .admin-container, 
+    .admin-form-container {
+        padding: 20px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
 }
